@@ -12,13 +12,14 @@ void fCreateList(ftList *L) {
 
 bool fInsertElement(ftItemL d, ftList *L) {
     ftPosL i, j;
-
+    
     if (!fCreateNode(&i)) {
         return false;
     } else {
         i->data = d;
         i->next = NULL;
         if (*L == NULL) {
+            printf("holaaa");
             *L = i;
         } else {
             for (j = *L; j->next != NULL; j = j->next);
@@ -68,7 +69,10 @@ void fDeleteList(ftList *L) {
 
 void fPrintList (ftList L) {
     ftPosL i;
+    printf("hola");
+
     for (i = L; i != NULL; i = i->next) {
-        printf("%d   %s   %s", i->data.descriptor, i->data.fname, i->data.OpMode);
+        printf("dentro");
+        printf("%d   %s   %d", i->data.descriptor, i->data.fname, i->data.OpMode);
     }
 }

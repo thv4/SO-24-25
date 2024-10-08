@@ -1,5 +1,5 @@
-p0.out : p0.c comandos.h lista.h general.h comandos.o lista.o general.o
-	gcc -o p0.out p0.c comandos.o lista.o general.o -Wall
+p0.out : p0.c comandos.h lista.h general.h comandos.o lista.o general.o listaArchivo.h listaArchivo.o
+	gcc -o p0.out p0.c comandos.o lista.o general.o listaArchivo.o -Wall
 
 comandos.o : comandos.c comandos.h 
 	gcc -c comandos.c
@@ -12,3 +12,6 @@ general.o : general.c general.h
 
 limpiar : 
 	rm p0.out comandos.o lista.o general.o
+
+listaArchivo.o : listaArchivo.c listaArchivo.h
+	gcc -c listaArchivo.c

@@ -13,9 +13,12 @@ int main(){
     char copiaCadena[256];
     int numeroTrozos = 0, i = 1;
     tList lista;
+    ftList listaArch;
     tItemL item;
 
     createList(&lista);
+    fCreateList(&listaArch);
+
     while (true) {
         imprimirPromp();
         leerEntrada(cadena, sizeof cadena);
@@ -35,7 +38,7 @@ int main(){
             }
         }
 
-        if (numeroTrozos > 0 && procesarEntrada(trozos, lista)) {
+        if (numeroTrozos > 0 && procesarEntrada(trozos, lista, listaArch)) {
             break;
         }
     }

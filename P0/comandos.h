@@ -20,6 +20,6 @@ void pid();
 void ppid();
 void cd(char * trozos[]);
 void date(char * trozos[]);
-void historic(char * trozos[], tList L);
-void open(char * tr[], ftList L);
+void historic(char * trozos[], tList L, ftList fL);
+void Cmd_open(char * tr[], ftList L);
 void infosys();

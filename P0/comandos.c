@@ -55,7 +55,7 @@ void date(char * trozos[]) {
     }
 }
 
-void historic(char * trozos[], tList L) {
+void historic(char * trozos[], tList L, ftList fL) {
     int N, ultId = 0;
     tPosL comando;
     tItemL itemNuevo;
@@ -79,16 +79,16 @@ void historic(char * trozos[], tList L) {
             insertElement(itemNuevo, &L);
 
             TrocearCadena(copiaTrozo, trozo);
-            procesarEntrada(trozo, L);
+            procesarEntrada(trozo, L, fL);
         }
     }
 }
 
-void open(char * tr[], ftList L) {
+void Cmd_open(char * tr[], ftList L) {
     int i,df, mode=0;
     ftItemL item;
     
-    if (tr[2]==NULL) { /*no hay parametro*/
+    if (tr[1]==NULL) { /*no hay parametro*/
         fPrintList(L);
         return;
     }
@@ -102,15 +102,15 @@ void open(char * tr[], ftList L) {
       else if (!strcmp(tr[i],"tr")) mode|=O_TRUNC; 
       else break;
     }
-    //df = open(tr[1],mode,0777);
+    df = open(tr[1],mode,0777);
     if (df ==-1) {
-        perror ("Imposible abrir fichero");
+        perror ("Imposible abrir fichero\n");
     }else {
         item.OpMode = mode;
         item.descriptor = df;
         strcpy(item.fname, tr[1]);
         fInsertElement(item,&L);
-        printf ("Anadida entrada a la tabla ficheros abiertos");
+        printf ("Anadida entrada a la tabla ficheros abiertos\n");
     }
 }
 
