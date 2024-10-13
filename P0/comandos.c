@@ -6,7 +6,6 @@ Mario Ozón Casais (mario.ozon@udc.es)
 #include "comandos.h"
 #include "general.h"
 #include "listaArchivo.h"
-#include <stdlib.h>
 
 void authors(char * trozos[]) {
     if (trozos[1] != NULL && strcmp(trozos[1],"-l")==0){

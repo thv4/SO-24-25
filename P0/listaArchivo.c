@@ -1,5 +1,4 @@
 #include "listaArchivo.h"
-#include <stdio.h>
 
 
 bool fCreateNode(ftPosL *p) {
