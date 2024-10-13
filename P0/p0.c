@@ -38,7 +38,7 @@ int main(){
             }
         }
 
-        if (numeroTrozos > 0 && procesarEntrada(trozos, lista, listaArch)) {
+        if (numeroTrozos > 0 && procesarEntrada(trozos, lista, &listaArch)) {
             break;
         }
     }

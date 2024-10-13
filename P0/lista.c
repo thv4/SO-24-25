@@ -50,7 +50,7 @@ void removeElement(tPosL p, tList *L){
         for ( i = *L; i->next != p; i = i->next) {
             i->next = NULL;
         }
-        
+
     } else {
         i = p->next;
         p->data = i->data;
@@ -95,8 +95,8 @@ void deleteList(tList *L) {
     tPosL temp;
 
     while (*L != NULL) {
-        temp = *L;        
-        *L = (*L)->next;  
-        free(temp);       
+        temp = *L;
+        *L = (*L)->next;
+        free(temp);
     }
 }

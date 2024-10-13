@@ -14,7 +14,7 @@ void authors(char * trozos[]) {
     } else {
         printf("Logins: m.denis.radu\nmario.ozon\n");
         printf("Names: Mario Denis Radu Trifu\nMario Ozón Casais\n");
-    }  
+    }
 }
 
 void pid() {
@@ -42,7 +42,7 @@ void date(char * trozos[]) {
 
     ltime = time(NULL);
     newtime = localtime(&ltime);
-    
+
     if (trozos[1] != NULL && strcmp(trozos[1],"-d")==0){
         strftime(sfecha, sizeof(sfecha),"%d/%m/%y", newtime);
         printf("%s\n", sfecha);
@@ -64,7 +64,7 @@ void historic(char * trozos[], tList L, ftList fL) {
 
     if (trozos[1] == NULL) {
         printList(L);
-    } else { 
+    } else {
         N = atoi (trozos[1]);
         if (trozos[1] != NULL && N < 0) {
             N = N * -1;
@@ -84,22 +84,22 @@ void historic(char * trozos[], tList L, ftList fL) {
     }
 }
 
-void Cmd_open(char * tr[], ftList L) {
+void Cmd_open(char * tr[], ftList *L) {
     int i,df, mode=0;
     ftItemL item;
-    
+
     if (tr[1]==NULL) { /*no hay parametro*/
-        fPrintList(L);
+        fPrintList(*L);
         return;
     }
     for (i=2; tr[i]!=NULL; i++) {
       if (!strcmp(tr[i],"cr")) mode|=O_CREAT;
       else if (!strcmp(tr[i],"ex")) mode|=O_EXCL;
-      else if (!strcmp(tr[i],"ro")) mode|=O_RDONLY; 
+      else if (!strcmp(tr[i],"ro")) mode|=O_RDONLY;
       else if (!strcmp(tr[i],"wo")) mode|=O_WRONLY;
       else if (!strcmp(tr[i],"rw")) mode|=O_RDWR;
       else if (!strcmp(tr[i],"ap")) mode|=O_APPEND;
-      else if (!strcmp(tr[i],"tr")) mode|=O_TRUNC; 
+      else if (!strcmp(tr[i],"tr")) mode|=O_TRUNC;
       else break;
     }
     df = open(tr[1],mode,0777);
@@ -109,7 +109,7 @@ void Cmd_open(char * tr[], ftList L) {
         item.OpMode = mode;
         item.descriptor = df;
         strcpy(item.fname, tr[1]);
-        fInsertElement(item,&L);
+        fInsertElement(item,L);
         printf ("Anadida entrada a la tabla ficheros abiertos\n");
     }
 }

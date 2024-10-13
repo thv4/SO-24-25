@@ -5,6 +5,7 @@ Mario Ozón Casais (mario.ozon@udc.es)
 
 #include "general.h"
 #include "comandos.h"
+#include "listaArchivo.h"
 
 void imprimirPromp(){ printf("$");}
 
@@ -12,7 +13,7 @@ void leerEntrada(char * cadena, int tamaño){
     fgets(cadena, tamaño, stdin);
 }
 
-int TrocearCadena(char * cadena, char * trozos[]) { 
+int TrocearCadena(char * cadena, char * trozos[]) {
     int i=1;
 
     if ((trozos[0]=strtok(cadena," \n\t")) == NULL) {
@@ -24,7 +25,7 @@ int TrocearCadena(char * cadena, char * trozos[]) {
     return i;
 }
 
-bool procesarEntrada(char * trozos[], tList L, ftList fL) {
+bool procesarEntrada(char * trozos[], tList L, ftList *fL) {
     if (strcmp(trozos[0],"authors")==0) {
         authors(trozos);
     }else if (strcmp(trozos[0],"pid")==0){
@@ -36,13 +37,14 @@ bool procesarEntrada(char * trozos[], tList L, ftList fL) {
     } else if(strcmp(trozos[0],"date")==0){
         date(trozos);
     } else if(strcmp(trozos[0],"historic")==0) {
-        historic(trozos, L, fL);
+        historic(trozos, L, * fL);
     } else if (strcmp(trozos[0],"open")==0){
         Cmd_open(trozos, fL);
     }else if (strcmp(trozos[0],"infosys")==0) {
         infosys();
     } else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
+        fDeleteList(fL);
         return true;
     }
     return false;

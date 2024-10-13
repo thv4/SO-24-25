@@ -10,4 +10,4 @@ Mario Ozón Casais (mario.ozon@udc.es)
 void imprimirPromp();
 void leerEntrada(char * cadena, int tamaño);
 int TrocearCadena(char * cadena, char * trozos[]);
-bool procesarEntrada(char * trozos[], tList L, ftList fL);
+bool procesarEntrada(char * trozos[], tList L, ftList *fL);
