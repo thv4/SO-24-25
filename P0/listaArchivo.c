@@ -32,10 +32,10 @@ bool fInsertElement(ftItemL d, ftList *L) {
     }
 }
 
-ftPosL fFindItem(tString nombre, ftList L) {
+ftPosL fFindItem(int df, ftList L) {
     ftPosL i;
     for (i = L; i != NULL; i = i->next) {
-        if (strcmp(i->data.fname,nombre) == 0) {
+        if (i->data.descriptor == df) {
             return i;
         }
     }

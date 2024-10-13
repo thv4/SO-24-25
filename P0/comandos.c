@@ -5,6 +5,8 @@ Mario Ozón Casais (mario.ozon@udc.es)
 
 #include "comandos.h"
 #include "general.h"
+#include "listaArchivo.h"
+#include <stdlib.h>
 
 void authors(char * trozos[]) {
     if (trozos[1] != NULL && strcmp(trozos[1],"-l")==0){
@@ -79,7 +81,7 @@ void historic(char * trozos[], tList L, ftList fL) {
             insertElement(itemNuevo, &L);
 
             TrocearCadena(copiaTrozo, trozo);
-            procesarEntrada(trozo, L, fL);
+            procesarEntrada(trozo, L, &fL);
         }
     }
 }
@@ -111,6 +113,22 @@ void Cmd_open(char * tr[], ftList *L) {
         strcpy(item.fname, tr[1]);
         fInsertElement(item,L);
         printf ("Anadida entrada a la tabla ficheros abiertos\n");
+    }
+}
+
+void Cmd_close (char *tr[], ftList *L) {
+    int df;
+    ftPosL p;
+
+    if (tr[1]==NULL || (df=atoi(tr[1]))<0) { /*no hay parametro*/
+        fPrintList(*L);/*o el descriptor es menor que 0*/
+        return;
+    }
+    if (close(df)==-1)
+        perror("Inposible cerrar descriptor");
+    else {
+        p = fFindItem(atoi(tr[1]), *L);
+        fRemoveElement(p, L);
     }
 }
 

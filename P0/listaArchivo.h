@@ -28,7 +28,7 @@ typedef ftPosL ftList;
 bool fCreateNode(ftPosL *p);
 void fCreateList(ftList *L);
 bool fInsertElement(ftItemL d, ftList *L);
-ftPosL fFindItem(tString nombre, ftList L);
+ftPosL fFindItem(int df, ftList L);
 void fRemoveElement(ftPosL p, ftList *L);
 void fDeleteList(ftList *L);
 void fPrintList (ftList L);
