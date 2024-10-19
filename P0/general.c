@@ -42,6 +42,8 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL) {
         Cmd_open(trozos, fL);
     } else if (strcmp(trozos[0],"close")==0){
         Cmd_close(trozos, fL);
+    } else if (strcmp(trozos[0],"dup")==0){
+        Cmd_dup(trozos, fL);
     } else if (strcmp(trozos[0],"infosys")==0) {
         infosys();
     } else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {

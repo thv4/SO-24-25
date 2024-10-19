@@ -128,7 +128,31 @@ void Cmd_close (char *tr[], ftList *L) {
     else {
         p = fFindItem(atoi(tr[1]), *L);
         fRemoveElement(p, L);
+        printf ("Eliminada entrada a la tabla ficheros abiertos\n");
+
     }
+}
+
+void Cmd_dup (char * tr[], ftList *L) { 
+    int df, duplicado;
+    char aux[500],*p;
+    ftItemL copia;
+    ftPosL original;
+    
+    if (tr[1]==NULL || (df=atoi(tr[1]))<0) { /*no hay parametro*/
+        fPrintList(*L);                 /*o el descriptor es menor que 0*/
+        return;
+    }
+    
+    duplicado=dup(df);
+    original = fFindItem(atoi(tr[1]), *L);
+    p = original->data.fname;
+    sprintf (aux,"dup %d (%s)",df, p);
+    copia.descriptor = duplicado;
+    strcpy(copia.fname, aux);
+    copia.OpMode = fcntl(duplicado,F_GETFL);
+
+    fInsertElement(copia, L);
 }
 
 void infosys() {
