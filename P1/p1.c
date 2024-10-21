@@ -28,16 +28,16 @@ int main(){
             item.id = i;
             strcpy(item.comando, copiaCadena);
             insertElement(item, &lista);
-            i++;
+
         } else if (trozos[0] != NULL && strcmp(trozos[0], "historic") == 0) {
             if (trozos[1] == NULL || (atoi (trozos[1]) < 0)) {
                 item.id = i;
                 strcpy(item.comando, copiaCadena);
                 insertElement(item, &lista);
-                i++;
+                
             }
         }
-
+        i++;
         if (numeroTrozos > 0 && procesarEntrada(trozos, lista, &listaArch)) {
             break;
         }

@@ -45,13 +45,13 @@ void date(char * trozos[]) {
     newtime = localtime(&ltime);
 
     if (trozos[1] != NULL && strcmp(trozos[1],"-d")==0){
-        strftime(sfecha, sizeof(sfecha),"%d/%m/%y", newtime);
+        strftime(sfecha, sizeof(sfecha),"%d/%m/%Y", newtime);
         printf("%s\n", sfecha);
     } else if (trozos[1] != NULL && strcmp(trozos[1],"-t")==0){
         strftime(sfecha, sizeof(sfecha),"%T",newtime);
         printf("%s\n",sfecha);
     } else {
-        strftime(sfecha, sizeof(sfecha),"%d/%m/%y  %T",newtime);
+        strftime(sfecha, sizeof(sfecha),"%d/%m/%Y  %T",newtime);
         printf("%s\n", sfecha);
     }
 }
@@ -76,7 +76,7 @@ void historic(char * trozos[], tList L, ftList fL) {
             ultId = ultimoElemento(L);
             strcpy(copiaTrozo, comando->data.comando);
             strcpy(itemNuevo.comando, copiaTrozo);
-            itemNuevo.id = ultId + 1;
+            itemNuevo.id = ultId;
             insertElement(itemNuevo, &L);
 
             TrocearCadena(copiaTrozo, trozo);
@@ -127,8 +127,12 @@ void Cmd_close (char *tr[], ftList *L) {
         perror("Inposible cerrar descriptor");
     else {
         p = fFindItem(atoi(tr[1]), *L);
-        fRemoveElement(p, L);
-        printf ("Eliminada entrada a la tabla ficheros abiertos\n");
+         if (p == NULL) {
+            printf("Error: descriptor %d no encontrado en la lista\n", df);
+        } else {
+            fRemoveElement(p, L);
+            printf("Eliminada entrada a la tabla ficheros abiertos para descriptor %d\n", df);
+        }
 
     }
 }
@@ -145,12 +149,23 @@ void Cmd_dup (char * tr[], ftList *L) {
     }
     
     duplicado=dup(df);
+    if (duplicado == -1) {
+        perror("Error al duplicar el descriptor");
+        return;
+    }
+    
     original = fFindItem(atoi(tr[1]), *L);
+    if (original == NULL) {
+        printf("Error: descriptor no encontrado en la lista\n");
+        return;
+    }
+
     p = original->data.fname;
     sprintf (aux,"dup %d (%s)",df, p);
+
     copia.descriptor = duplicado;
     strcpy(copia.fname, aux);
-    copia.OpMode = fcntl(duplicado,F_GETFL);
+    copia.OpMode = original->data.OpMode;
 
     fInsertElement(copia, L);
 }

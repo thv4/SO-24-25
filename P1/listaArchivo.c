@@ -42,20 +42,21 @@ ftPosL fFindItem(int df, ftList L) {
 }
 
 void fRemoveElement(ftPosL p, ftList *L) {
-    ftPosL i;
+    ftPosL prev = NULL;
+    ftPosL actual = *L;
+
     if (p == *L) {
         *L = (*L)->next;
-    } else if(p->next == NULL) {
-        for ( i = *L; i->next != p; i = i->next) {
-            i->next = NULL;
-        }
     } else {
-        i = p->next;
-        p->data = i->data;
-        p->next = i->next;
-        p = i;
+        while (actual != NULL && actual != p) {
+            prev = actual;
+            actual = actual->next;
+        }
+        if (actual == p) {
+            prev->next = actual->next;
+        }
     }
-    free(p);
+    free(p); 
 }
 
 void fDeleteList(ftList *L) {
