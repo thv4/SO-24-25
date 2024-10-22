@@ -213,3 +213,40 @@ void help(char * trozos[]) {
         printf("infosys 	Muestra informacion de la maquina donde corre el shell\n");
     } 
 }
+
+void makefile(char * trozos[]){
+int fd;
+
+fd = creat(trozos[1], 0777);
+if (fd ==-1) {
+        perror ("Imposible crear fichero\n");
+    }
+}
+
+void cwd(){
+    char directorio[256];
+    printf("%s\n", getcwd(directorio, sizeof directorio));
+}
+
+void makedir(char * trozos[]){
+int status;
+
+status = mkdir(trozos[1], 0777);
+if (status ==-1) {
+        perror ("Imposible crear directorio\n");
+    }
+}
+
+void listfile(char * trozos[]){
+    DIR *dir;
+    struct dirent *infofile;
+
+    dir = opendir(trozos[2]);
+    infofile = readdir(dir);
+    if(trozos[1]==NULL || trozos[2]==NULL){
+        cwd();
+    }else if(strcmp(trozos[2],"-long")==0){
+        printf("%ld %ld %d %c %s",infofile->d_ino, infofile->d_off, infofile->d_reclen, infofile->d_type, infofile->d_name);
+    }
+
+}

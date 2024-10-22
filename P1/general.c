@@ -48,7 +48,15 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL) {
         infosys();
     } else if (strcmp(trozos[0],"help")==0){
         help(trozos);
-    } else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
+    } else if (strcmp(trozos[0],"makefile")==0){
+        makefile(trozos);
+    }else if (strcmp(trozos[0],"cwd")==0){
+        cwd();
+    }else if(strcmp(trozos[0],"makedir")==0){
+        makedir(trozos);
+    }else if(strcmp(trozos[0],"listfile")==0){
+        listfile(trozos);
+    }else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
         fDeleteList(fL);
         return true;
