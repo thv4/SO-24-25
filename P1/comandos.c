@@ -229,10 +229,10 @@ void cwd(){
 }
 
 void makedir(char * trozos[]){
-int status;
+    int status;
 
-status = mkdir(trozos[1], 0777);
-if (status ==-1) {
+    status = mkdir(trozos[1], 0777);
+    if (status ==-1) {
         perror ("Imposible crear directorio\n");
     }
 }
@@ -240,13 +240,76 @@ if (status ==-1) {
 void listfile(char * trozos[]){
     DIR *dir;
     struct dirent *infofile;
+    int i;
 
-    dir = opendir(trozos[2]);
-    infofile = readdir(dir);
-    if(trozos[1]==NULL || trozos[2]==NULL){
+    if(trozos[1]==NULL){
         cwd();
-    }else if(strcmp(trozos[2],"-long")==0){
-        printf("%ld %ld %d %c %s",infofile->d_ino, infofile->d_off, infofile->d_reclen, infofile->d_type, infofile->d_name);
+    } else if ((strcmp(trozos[1],"-acc") == 0 || strcmp(trozos[1],"-link") == 0 || strcmp(trozos[1],"-long") == 0) && trozos[2] == NULL) {
+        printf("Indique los archivos\n");
     }
 
+    dir = opendir(".");
+    if (dir == NULL) {
+            perror("No se pudo abrir el directorio");
+    }
+    while ((infofile = readdir(dir)) != NULL) {
+        for (i = 1; trozos[i] != NULL; i++) {
+            if (strcmp(infofile->d_name, trozos[i]) == 0) {
+                struct stat file_stat;
+
+                if (lstat(infofile->d_name, &file_stat) == -1) {
+                    perror("Error obteniendo información del archivo");
+                    continue;
+                }
+
+                if (strcmp(trozos[1], "-long") == 0) {
+                    // Para la fecha de modificación:
+                    struct tm *tm_info = localtime(&file_stat.st_mtime);
+                    char buffer[20];
+                    strftime(buffer, 20, "%Y/%m/%d-%H:%M", tm_info);
+                    // Para el propietario y grupo:
+                    struct passwd *pw = getpwuid(file_stat.st_uid);
+                    struct group *gr = getgrgid(file_stat.st_gid);
+
+                    printf("%s  %lu  (%lu)\t%s\t%s  ", buffer, file_stat.st_nlink, file_stat.st_ino, pw->pw_name, gr->gr_name);
+
+                    // Para los permisos:
+                    printf( (S_ISDIR(file_stat.st_mode)) ? "d" : 
+                            (S_ISLNK(file_stat.st_mode)) ? "l" : "-");
+                    printf( (file_stat.st_mode & S_IRUSR) ? "r" : "-");
+                    printf( (file_stat.st_mode & S_IWUSR) ? "w" : "-");
+                    printf( (file_stat.st_mode & S_IXUSR) ? "x" : "-");
+                    printf( (file_stat.st_mode & S_IRGRP) ? "r" : "-");
+                    printf( (file_stat.st_mode & S_IWGRP) ? "w" : "-");
+                    printf( (file_stat.st_mode & S_IXGRP) ? "x" : "-");
+                    printf( (file_stat.st_mode & S_IROTH) ? "r" : "-");
+                    printf( (file_stat.st_mode & S_IWOTH) ? "w" : "-");
+                    printf( (file_stat.st_mode & S_IXOTH) ? "x" : "-");
+                    printf("\t");
+                    printf("%ld  %s\n", file_stat.st_size,infofile->d_name);
+                } else if (strcmp(trozos[1], "-acc") == 0) {
+                    // Para la fecha de modificación:
+                    struct tm *tm_info = localtime(&file_stat.st_mtime);
+                    char buffer[20];
+                    strftime(buffer, 20, "%Y/%m/%d-%H:%M", tm_info);
+
+                    printf("%s  %ld  %s\n",buffer, file_stat.st_size, infofile->d_name);
+                } else if (strcmp(trozos[1], "-link") == 0) {
+                    char linkname[1024];
+                    ssize_t link = readlink(infofile->d_name,linkname, sizeof(linkname) - 1);
+
+                    if (link != -1) {
+                        linkname[link] = '\0';  // Asegúrate de que la cadena esté terminada
+                        printf("%ld  %s --> %s\n",file_stat.st_size, infofile->d_name,linkname);   
+                    } else {
+                        perror("Error al leer el enlace simbólico");
+                    }
+                }else {
+                    printf("%ld  %s\n",file_stat.st_size, infofile->d_name);
+                }  
+            }
+
+        }  
+    }
+    closedir(dir);
 }

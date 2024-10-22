@@ -7,6 +7,7 @@ Mario Ozón Casais (mario.ozon@udc.es)
 #include "comandos.h"
 #include "listaArchivo.h"
 
+
 void imprimirPromp(){ printf("$");}
 
 void leerEntrada(char * cadena, int tamaño){

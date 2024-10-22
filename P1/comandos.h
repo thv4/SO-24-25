@@ -12,9 +12,12 @@ Mario Ozón Casais (mario.ozon@udc.es)
 #include <sys/utsname.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <dirent.h>
+#include <pwd.h>
+#include <grp.h>
 #include "lista.h"
 #include "listaArchivo.h"
-#include <dirent.h>
+
 
 void authors(char * trozos[]);
 void pid();
