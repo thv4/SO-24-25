@@ -101,7 +101,7 @@ void printLink(struct dirent * infofile){
 
     if (link != -1) {
         linkname[link] = '\0';  // Asegúrate de que la cadena esté terminada
-        printf("  %s --> %s\n", infofile->d_name,linkname);
+        printf(" --> %s\n",linkname);
     } else {
         printf("\n");
     }
