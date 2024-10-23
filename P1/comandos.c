@@ -307,8 +307,10 @@ void listdir(char * trozos[]){
     DIR *dir;
     struct dirent *infodir;
     bool lonG= false, hid = false, acc = false, link = false;
+    int i;
+    char *directorio;
 
-    for (int i = 1; trozos[i] != NULL ; i++){
+    for (i = 1; trozos[i] != NULL ; i++){
         if (strcmp(trozos[i], "-long") == 0) {
             lonG = true;
         } else if (strcmp(trozos[i], "-hid") == 0) {
@@ -319,21 +321,66 @@ void listdir(char * trozos[]){
             link = true;
         }
     }
+    directorio = trozos[i-1];
+    dir = opendir(directorio);
 
-    dir = opendir(".");
     while((infodir = readdir(dir)) != NULL){
 
-        for (int i = 1; trozos[i]!=NULL; i++) {
-            if (hid) {
-                if(!lonG){
+        struct stat file_stat;
 
+            if (lstat(infodir->d_name, &file_stat) == -1) {
+                perror("Error obteniendo información del archivo");
+                continue;
+            }
 
-                }else{
-
+        if (hid) {
+            if(!lonG){
+                if(acc){
+                    printFechaMod(file_stat);
                 }
-                
-            } else if (lonG && !hid) {
+                printf("%ld\t%s",file_stat.st_size,infodir->d_name);
+                if (link) {
+                    printLink(infodir);
+                } else {
+                    printf("\n");
+                }
+            }else{
+                printFechaMod(file_stat);
+                printf("  %lu  (%lu)",file_stat.st_nlink, file_stat.st_ino);
+                printPropGrupo(file_stat);
+                printPermisos(file_stat);
+                printf("%ld\t%s",file_stat.st_size,infodir->d_name);
+                if (link) {
+                    printLink(infodir);
+                } else {
+                    printf("\n");
+                }
+            }
             
+        } else if (lonG) {  
+            if((strcmp(infodir->d_name,".")!=0) && (strcmp(infodir->d_name,"..")!=0) && (infodir->d_name[0]!='.')){
+                printFechaMod(file_stat);
+                printf("  %lu  (%lu)",file_stat.st_nlink, file_stat.st_ino);
+                printPropGrupo(file_stat);
+                printPermisos(file_stat);
+                printf("%ld\t%s",file_stat.st_size,infodir->d_name);
+                if (link) {
+                    printLink(infodir);
+                } else {
+                    printf("\n");
+                } 
+            }
+        }else {
+            if((strcmp(infodir->d_name,".")!=0) && (strcmp(infodir->d_name,"..")!=0) && (infodir->d_name[0]!='.')){
+                if(acc){
+                    printFechaMod(file_stat);
+                }
+                printf("%ld\t%s",file_stat.st_size,infodir->d_name);
+                if (link) {
+                    printLink(infodir);
+                } else {
+                    printf("\n");
+                } 
             }
         }
     }

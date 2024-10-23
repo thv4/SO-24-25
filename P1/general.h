@@ -4,6 +4,7 @@ Mario Ozón Casais (mario.ozon@udc.es)
 */
 
 #include <stdbool.h>
+#include <dirent.h>
 #include "lista.h"
 #include "listaArchivo.h"
 

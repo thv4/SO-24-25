@@ -57,6 +57,8 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL) {
         makedir(trozos);
     }else if(strcmp(trozos[0],"listfile")==0){
         listfile(trozos);
+    }else if(strcmp(trozos[0],"listdir")==0){
+        listdir(trozos);
     }else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
         fDeleteList(fL);
@@ -84,13 +86,13 @@ void printFechaMod(struct stat file_stat){
     struct tm *tm_info = localtime(&file_stat.st_mtime);
     char buffer[20];
     strftime(buffer, 20, "%Y/%m/%d-%H:%M", tm_info);
-    printf("%s", buffer);
+    printf("%s  ", buffer);
 }
 
 void printPropGrupo(struct stat file_stat){
     struct passwd *pw = getpwuid(file_stat.st_uid);
     struct group *gr = getgrgid(file_stat.st_gid);
-    printf("%s\t%s",pw->pw_name,gr->gr_name);
+    printf("\t%s\t%s  ",pw->pw_name,gr->gr_name);
 }
 
 void printLink(struct dirent * infofile){
@@ -99,8 +101,8 @@ void printLink(struct dirent * infofile){
 
     if (link != -1) {
         linkname[link] = '\0';  // Asegúrate de que la cadena esté terminada
-        printf("%s --> %s\n", infofile->d_name,linkname);   
+        printf("  %s --> %s\n", infofile->d_name,linkname);
     } else {
-        perror("Error al leer el enlace simbólico");
+        printf("\n");
     }
 }
