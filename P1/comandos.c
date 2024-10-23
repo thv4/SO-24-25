@@ -325,13 +325,15 @@ void listdir(char * trozos[]){
     dir = opendir(directorio);
 
     while((infodir = readdir(dir)) != NULL){
-
         struct stat file_stat;
+        char rutaCompleta[1024]; 
 
-            if (lstat(infodir->d_name, &file_stat) == -1) {
-                perror("Error obteniendo información del archivo");
-                continue;
-            }
+        snprintf(rutaCompleta, sizeof(rutaCompleta), "%s/%s", directorio, infodir->d_name);
+
+        if (lstat(rutaCompleta, &file_stat) == -1) {
+            perror("Error obteniendo información del archivo");
+            continue;
+        }
 
         if (hid) {
             if(!lonG){
