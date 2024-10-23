@@ -223,11 +223,6 @@ if (fd ==-1) {
     }
 }
 
-void cwd(){
-    char directorio[256];
-    printf("%s\n", getcwd(directorio, sizeof directorio));
-}
-
 void makedir(char * trozos[]){
     int status;
 
@@ -274,18 +269,7 @@ void listfile(char * trozos[]){
                     printf("%s  %lu  (%lu)\t%s\t%s  ", buffer, file_stat.st_nlink, file_stat.st_ino, pw->pw_name, gr->gr_name);
 
                     // Para los permisos:
-                    printf( (S_ISDIR(file_stat.st_mode)) ? "d" : 
-                            (S_ISLNK(file_stat.st_mode)) ? "l" : "-");
-                    printf( (file_stat.st_mode & S_IRUSR) ? "r" : "-");
-                    printf( (file_stat.st_mode & S_IWUSR) ? "w" : "-");
-                    printf( (file_stat.st_mode & S_IXUSR) ? "x" : "-");
-                    printf( (file_stat.st_mode & S_IRGRP) ? "r" : "-");
-                    printf( (file_stat.st_mode & S_IWGRP) ? "w" : "-");
-                    printf( (file_stat.st_mode & S_IXGRP) ? "x" : "-");
-                    printf( (file_stat.st_mode & S_IROTH) ? "r" : "-");
-                    printf( (file_stat.st_mode & S_IWOTH) ? "w" : "-");
-                    printf( (file_stat.st_mode & S_IXOTH) ? "x" : "-");
-                    printf("\t");
+                    printPermisos(file_stat);
                     printf("%ld  %s\n", file_stat.st_size,infofile->d_name);
                 } else if (strcmp(trozos[1], "-acc") == 0) {
                     // Para la fecha de modificación:
@@ -313,3 +297,46 @@ void listfile(char * trozos[]){
     }
     closedir(dir);
 }
+
+void cwd(){
+    char directorio[256];
+    printf("%s\n", getcwd(directorio, sizeof directorio));
+}
+
+void listdir(char * trozos[]){
+    DIR *dir;
+    struct dirent *infodir;
+    bool lonG= false, hid = false, acc = false, link = false;
+
+    for (int i = 1; trozos[i] != NULL ; i++){
+        if (strcmp(trozos[i], "-long") == 0) {
+            lonG = true;
+        } else if (strcmp(trozos[i], "-hid") == 0) {
+            hid = true;
+        } else if (strcmp(trozos[i], "-acc") == 0) {
+            acc = true;
+        } else if (strcmp(trozos[i], "-link") == 0) {
+            link = true;
+        }
+    }
+
+    dir = opendir(".");
+    while((infodir = readdir(dir)) != NULL){
+
+        for (int i = 1; trozos[i]!=NULL; i++) {
+            if (hid) {
+                if(!lonG){
+
+
+                }else{
+
+                }
+                
+            } else if (lonG && !hid) {
+            
+            }
+        }
+    }
+    closedir(dir);
+}
+

@@ -64,3 +64,43 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL) {
     }
     return false;
 }
+
+void printPermisos(struct stat file_stat){
+    printf( (S_ISDIR(file_stat.st_mode)) ? "d" : 
+            (S_ISLNK(file_stat.st_mode)) ? "l" : "-");
+    printf( (file_stat.st_mode & S_IRUSR) ? "r" : "-");
+    printf( (file_stat.st_mode & S_IWUSR) ? "w" : "-");
+    printf( (file_stat.st_mode & S_IXUSR) ? "x" : "-");
+    printf( (file_stat.st_mode & S_IRGRP) ? "r" : "-");
+    printf( (file_stat.st_mode & S_IWGRP) ? "w" : "-");
+    printf( (file_stat.st_mode & S_IXGRP) ? "x" : "-");
+    printf( (file_stat.st_mode & S_IROTH) ? "r" : "-");
+    printf( (file_stat.st_mode & S_IWOTH) ? "w" : "-");
+    printf( (file_stat.st_mode & S_IXOTH) ? "x" : "-");
+    printf("\t");
+}
+
+void printFechaMod(struct stat file_stat){
+    struct tm *tm_info = localtime(&file_stat.st_mtime);
+    char buffer[20];
+    strftime(buffer, 20, "%Y/%m/%d-%H:%M", tm_info);
+    printf("%s", buffer);
+}
+
+void printPropGrupo(struct stat file_stat){
+    struct passwd *pw = getpwuid(file_stat.st_uid);
+    struct group *gr = getgrgid(file_stat.st_gid);
+    printf("%s\t%s",pw->pw_name,gr->gr_name);
+}
+
+void printLink(struct dirent * infofile){
+    char linkname[1024];
+    ssize_t link = readlink(infofile->d_name,linkname, sizeof(linkname) - 1);
+
+    if (link != -1) {
+        linkname[link] = '\0';  // Asegúrate de que la cadena esté terminada
+        printf("%s --> %s\n", infofile->d_name,linkname);   
+    } else {
+        perror("Error al leer el enlace simbólico");
+    }
+}

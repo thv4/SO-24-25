@@ -31,6 +31,7 @@ void Cmd_dup (char * tr[], ftList *L);
 void infosys();
 void help(char * trozos[]);
 void makefile(char * trozos[]);
-void cwd();
 void makedir(char * trozos[]);
 void listfile(char * trozos[]);
+void cwd();
+void listdir(char * trozos[]);
