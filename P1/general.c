@@ -102,7 +102,19 @@ void printLink(struct dirent * infofile){
     ssize_t link = readlink(infofile->d_name,linkname, sizeof(linkname) - 1);
 
     if (link != -1) {
-        linkname[link] = '\0';  // Asegúrate de que la cadena esté terminada
+        linkname[link] = '\0';  
+        printf(" --> %s\n",linkname);
+    } else {
+        printf("\n");
+    }
+}
+
+void printLink2(char * infofile){
+    char linkname[1024];
+    ssize_t link = readlink(infofile,linkname, sizeof(linkname) - 1);
+
+    if (link != -1) {
+        linkname[link] = '\0';  
         printf(" --> %s\n",linkname);
     } else {
         printf("\n");

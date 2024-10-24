@@ -235,67 +235,68 @@ void makedir(char * trozos[]){
 void listfile(char * trozos[]){
     DIR *dir;
     struct dirent *infofile;
-    int i;
+    bool lonG= false, hid = false, acc = false, link = false;
+    int i, j = 1;
 
     if(trozos[1]==NULL){
         cwd();
-    } else if ((strcmp(trozos[1],"-acc") == 0 || strcmp(trozos[1],"-link") == 0 || strcmp(trozos[1],"-long") == 0) && trozos[2] == NULL) {
-        printf("Indique los archivos\n");
     }
 
-    dir = opendir(".");
-    if (dir == NULL) {
-            perror("No se pudo abrir el directorio");
+    for (i = 1; trozos[i] != NULL ; i++){
+        if (strcmp(trozos[i], "-long") == 0) {
+            lonG = true;
+            j++;
+        } else if (strcmp(trozos[i], "-hid") == 0) {
+            hid = true;
+            j++;
+        } else if (strcmp(trozos[i], "-acc") == 0) {
+            acc = true;
+            j++;
+        } else if (strcmp(trozos[i], "-link") == 0) {
+            link = true;
+            j++;
+        }
     }
-    while ((infofile = readdir(dir)) != NULL) {
-        for (i = 1; trozos[i] != NULL; i++) {
-            if (strcmp(infofile->d_name, trozos[i]) == 0) {
-                struct stat file_stat;
 
-                if (lstat(infofile->d_name, &file_stat) == -1) {
-                    perror("Error obteniendo información del archivo");
-                    continue;
-                }
+    for (; trozos[j] != NULL; j++) {
+        
+        struct stat file_stat;
 
-                if (strcmp(trozos[1], "-long") == 0) {
-                    // Para la fecha de modificación:
-                    struct tm *tm_info = localtime(&file_stat.st_mtime);
-                    char buffer[20];
-                    strftime(buffer, 20, "%Y/%m/%d-%H:%M", tm_info);
-                    // Para el propietario y grupo:
-                    struct passwd *pw = getpwuid(file_stat.st_uid);
-                    struct group *gr = getgrgid(file_stat.st_gid);
+        if (lstat(trozos[j], &file_stat) == -1) {
+            perror("Error obteniendo información del archivo");
+            continue;
+        }
 
-                    printf("%s  %lu  (%lu)\t%s\t%s  ", buffer, file_stat.st_nlink, file_stat.st_ino, pw->pw_name, gr->gr_name);
-
-                    // Para los permisos:
-                    printPermisos(file_stat);
-                    printf("%ld  %s\n", file_stat.st_size,infofile->d_name);
-                } else if (strcmp(trozos[1], "-acc") == 0) {
-                    // Para la fecha de modificación:
-                    struct tm *tm_info = localtime(&file_stat.st_mtime);
-                    char buffer[20];
-                    strftime(buffer, 20, "%Y/%m/%d-%H:%M", tm_info);
-
-                    printf("%s  %ld  %s\n",buffer, file_stat.st_size, infofile->d_name);
-                } else if (strcmp(trozos[1], "-link") == 0) {
-                    char linkname[1024];
-                    ssize_t link = readlink(infofile->d_name,linkname, sizeof(linkname) - 1);
-
-                    if (link != -1) {
-                        linkname[link] = '\0';  // Asegúrate de que la cadena esté terminada
-                        printf("%ld  %s --> %s\n",file_stat.st_size, infofile->d_name,linkname);   
-                    } else {
-                        perror("Error al leer el enlace simbólico");
-                    }
-                }else {
-                    printf("%ld  %s\n",file_stat.st_size, infofile->d_name);
-                }  
+        if (!hid && trozos[j][0] == '.' && trozos[j][1] != '/' ) {
+            continue;
+        }
+        
+        if (lonG) {
+            printFechaMod(file_stat);                    
+            printf("  %lu  (%lu)", file_stat.st_nlink, file_stat.st_ino);  
+            printPropGrupo(file_stat);                   
+            printPermisos(file_stat);                    
+            printf("%ld\t%s", file_stat.st_size, trozos[j]);  
+            if (link) {
+                printLink2(trozos[j]);                   
+            } else {
+                printf("\n");
             }
-
-        }  
-    }
-    closedir(dir);
+        } else if (acc) {
+            printFechaMod(file_stat);
+            printf("  %ld  %s", file_stat.st_size, trozos[j]);
+            if (link) {
+                printLink2(trozos[j]);                   
+            } else {
+                printf("\n");
+            } 
+        } else if (link) {
+            printf("%ld  %s", file_stat.st_size, trozos[j]); 
+            printLink2(trozos[j]);                       
+        } else {
+            printf("%ld\t%s\n", file_stat.st_size, trozos[j]);
+        }
+    }  
 }
 
 void cwd(){

@@ -16,3 +16,4 @@ void printPermisos(struct stat file_stat);
 void printFechaMod(struct stat file_stat);
 void printPropGrupo(struct stat file_stat);
 void printLink(struct dirent * infofile);
+void printLink2(char * infofile);
