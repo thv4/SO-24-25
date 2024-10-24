@@ -61,6 +61,8 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL) {
         listdir(trozos);
     }else if(strcmp(trozos[0],"erase")==0){
         erase(trozos);
+    }else if(strcmp(trozos[0],"reclist")==0){
+        reclist(trozos);
     }else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
         fDeleteList(fL);
@@ -107,4 +109,55 @@ void printLink(struct dirent * infofile){
     } else {
         printf("\n");
     }
+}
+
+
+void listDirRecursively(char *basePath, int root, int showHidden, int showLong, int showLinks, int showAcc) {
+    int i;
+    char path[1000];
+    struct dirent *dp;
+    struct stat info;  // Para almacenar la información del archivo
+    DIR *dir = opendir(basePath);
+
+    if (!dir)
+        return;
+
+    while ((dp = readdir(dir)) != NULL) {
+        // Paso 1: Saltar los directorios "." y ".."
+        if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0)
+            continue;
+
+        // Paso 2: Filtrar archivos ocultos si no está habilitada la opción -hid
+        if (!showHidden && dp->d_name[0] == '.')
+            continue;
+
+        // Construimos la ruta completa del archivo/directorio
+        strcpy(path, basePath);
+        strcat(path, "/");
+        strcat(path, dp->d_name);
+
+        // Paso 3: Usamos stat para obtener información del archivo
+        if (stat(path, &info) == 0) {
+            // Paso 4: Imprimir detalles del archivo si se usa -long
+            if (showLong) {
+                printFechaMod(info);
+                printf("  %lu  (%lu)",info.st_nlink, info.st_ino);
+                printPropGrupo(info);
+                printPermisos(info);
+                printf("%ld\t%s\n",info.st_size,dp->d_name);
+                //printf("%10lld %s\n", (long long) info.st_size, dp->d_name);  // Tamaño y nombre
+            } else {
+                printf("%s\n", dp->d_name);  // Solo nombre
+            }
+
+            // Paso 5: Si es un directorio, llamamos recursivamente
+            if (S_ISDIR(info.st_mode)) {
+                listDirRecursively(path, root + 2, showHidden, showLong, showLinks, showAcc);
+            }
+        } else {
+            perror("Error al obtener la información del archivo");
+        }
+    }
+
+    closedir(dir);
 }

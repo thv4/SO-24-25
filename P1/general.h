@@ -16,3 +16,4 @@ void printPermisos(struct stat file_stat);
 void printFechaMod(struct stat file_stat);
 void printPropGrupo(struct stat file_stat);
 void printLink(struct dirent * infofile);
+void listDirRecursively(char *basePath, int root, int showHidden, int showLong, int showLinks, int showAcc);
