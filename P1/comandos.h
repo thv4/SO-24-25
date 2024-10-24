@@ -36,3 +36,4 @@ void listfile(char * trozos[]);
 void cwd();
 void listdir(char * trozos[]);
 void erase (char * trozos[]);
+void reclist(char * trozos[]);
