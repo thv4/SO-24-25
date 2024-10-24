@@ -325,6 +325,11 @@ void listdir(char * trozos[]){ //error de segmentación si se le pasa un directo
     directorio = trozos[i-1];
     dir = opendir(directorio);
 
+    if (!dir) {
+        perror("El directorio no existe");
+        return;
+    }
+
     while((infodir = readdir(dir)) != NULL){
         struct stat file_stat;
         char rutaCompleta[1024]; 
