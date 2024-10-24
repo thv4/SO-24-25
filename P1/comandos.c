@@ -427,7 +427,6 @@ void erase (char * trozos[]){ //revisar todos los casos!!!!!!!
 
 void reclist(char * trozos[]) {
     char path[1000];  // Para construir el path completo
-    int root = 0;     // Para llevar la profundidad
     int showHidden = 0, showLong = 0, showLinks = 0, showAcc = 0;
     
     // Paso 1: Verificar si hay opciones (-hid, -long, -link, -acc)
@@ -447,14 +446,14 @@ void reclist(char * trozos[]) {
     // Paso 2: Si no hay directorios dados, usar el directorio actual "."
     if (trozos[i] == NULL) {
         strcpy(path, ".");
-        listDirRecursively(path, root, showHidden, showLong, showLinks, showAcc);  // Llamada recursiva al listado
+        listDirRecursively(path, showHidden, showLong, showLinks, showAcc);  // Llamada recursiva al listado
     } else {
         // Paso 3: Listar los directorios dados en los argumentos
         for (; trozos[i] != NULL; i++) {
             struct stat info;
             if (stat(trozos[i], &info) == 0 && S_ISDIR(info.st_mode)) {
                 strcpy(path, trozos[i]);
-                listDirRecursively(path, root, showHidden, showLong, showLinks, showAcc);
+                listDirRecursively(path, showHidden, showLong, showLinks, showAcc);
             } else {
                 printf("Error: %s no es un directorio válido\n", trozos[i]);
             }

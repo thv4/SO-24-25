@@ -124,11 +124,11 @@ void printLink2(char * infofile){
 }
 
 
-void listDirRecursively(char *basePath, int root, int showHidden, int showLong, int showLinks, int showAcc) {
+void listDirRecursively(char *basePath, int showHidden, int showLong, int showLinks, int showAcc) {
     int i;
     char path[1000];
     struct dirent *dp;
-    struct stat info;  // Para almacenar la información del archivo
+    struct stat file_stat;  // Para almacenar la información del archivo
     DIR *dir = opendir(basePath);
 
     if (!dir)
@@ -139,32 +139,44 @@ void listDirRecursively(char *basePath, int root, int showHidden, int showLong, 
         if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0)
             continue;
 
-        // Paso 2: Filtrar archivos ocultos si no está habilitada la opción -hid
-        if (!showHidden && dp->d_name[0] == '.')
-            continue;
-
         // Construimos la ruta completa del archivo/directorio
         strcpy(path, basePath);
         strcat(path, "/");
         strcat(path, dp->d_name);
 
         // Paso 3: Usamos stat para obtener información del archivo
-        if (stat(path, &info) == 0) {
+        if (stat(path, &file_stat) == 0) {
             // Paso 4: Imprimir detalles del archivo si se usa -long
             if (showLong) {
-                printFechaMod(info);
-                printf("  %lu  (%lu)",info.st_nlink, info.st_ino);
-                printPropGrupo(info);
-                printPermisos(info);
-                printf("%ld\t%s\n",info.st_size,dp->d_name);
-                //printf("%10lld %s\n", (long long) info.st_size, dp->d_name);  // Tamaño y nombre
-            } else {
-                printf("%s\n", dp->d_name);  // Solo nombre
-            }
+                printFechaMod(file_stat);
+                printf("  %lu  (%lu)",file_stat.st_nlink, file_stat.st_ino);
+                printPropGrupo(file_stat);
+                printPermisos(file_stat);
+                printf("%ld\t%s",file_stat.st_size,dp->d_name);
+                if (link) {
+                    printLink(dp);                   
+                } else {
+                    printf("\n");
+                }
 
+
+            }else if (showAcc) {
+                printFechaMod(file_stat);
+                printf("  %ld  %s", file_stat.st_size, dp->d_name);
+                if (link) {
+                    printLink(dp);                   
+                } else {
+                    printf("\n");
+                }  
+            }else if (showLinks) {
+                printf("%ld  %s", file_stat.st_size, dp->d_name); 
+                printLink(dp);                       
+            } else {
+                printf("%ld\t%s\n", file_stat.st_size, dp->d_name);
+            }  
             // Paso 5: Si es un directorio, llamamos recursivamente
-            if (S_ISDIR(info.st_mode)) {
-                listDirRecursively(path, root + 2, showHidden, showLong, showLinks, showAcc);
+            if (S_ISDIR(file_stat.st_mode)) {
+                listDirRecursively(path, showHidden, showLong, showLinks, showAcc);
             }
         } else {
             perror("Error al obtener la información del archivo");
