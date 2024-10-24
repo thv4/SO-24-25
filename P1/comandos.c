@@ -241,7 +241,7 @@ void listfile(char * trozos[]){
     if(trozos[1]==NULL){
         cwd();
     }
-
+    // Verificacion de las etiquetas 
     for (i = 1; trozos[i] != NULL ; i++){
         if (strcmp(trozos[i], "-long") == 0) {
             lonG = true;
@@ -258,7 +258,7 @@ void listfile(char * trozos[]){
         }
     }
 
-    for (; trozos[j] != NULL; j++) {
+    for (; trozos[j] != NULL; j++) { // Bucle que recorre solo los archivos 
         
         struct stat file_stat;
 
