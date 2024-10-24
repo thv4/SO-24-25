@@ -138,12 +138,15 @@ void listDirRecursively(char *basePath, int showHidden, int showLong, int showLi
         // Paso 1: Saltar los directorios "." y ".."
         if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0)
             continue;
+        
+        if (!showHidden && dp->d_name[0] == '.') {
+            continue;
+        }
 
         // Construimos la ruta completa del archivo/directorio
         strcpy(path, basePath);
         strcat(path, "/");
         strcat(path, dp->d_name);
-
         // Paso 3: Usamos stat para obtener información del archivo
         if (stat(path, &file_stat) == 0) {
             // Paso 4: Imprimir detalles del archivo si se usa -long
@@ -176,6 +179,7 @@ void listDirRecursively(char *basePath, int showHidden, int showLong, int showLi
             }  
             // Paso 5: Si es un directorio, llamamos recursivamente
             if (S_ISDIR(file_stat.st_mode)) {
+                printf("\n*************  %s  *************\n",path);
                 listDirRecursively(path, showHidden, showLong, showLinks, showAcc);
             }
         } else {
