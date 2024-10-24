@@ -304,7 +304,7 @@ void cwd(){
     printf("%s\n", getcwd(directorio, sizeof directorio));
 }
 
-void listdir(char * trozos[]){ //error de segmentación si se le pasa un directorio que no existe!!!!!!!!!!!!!!
+void listdir(char * trozos[]){ 
     DIR *dir;
     struct dirent *infodir;
     bool lonG= false, hid = false, acc = false, link = false;
@@ -395,7 +395,7 @@ void listdir(char * trozos[]){ //error de segmentación si se le pasa un directo
     closedir(dir);
 }
 
-void erase (char * trozos[]){ //revisar todos los casos!!!!!!!
+void erase (char * trozos[]){ 
     
     if(trozos[1]==NULL){
         perror("Error: No se especificó el nombre del archivo a eliminar\n");
