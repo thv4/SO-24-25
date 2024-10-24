@@ -1,3 +1,8 @@
+/*
+Mario Denis Radu Trifu (m.denis.radu@udc.es)
+Mario Ozón Casais (mario.ozon@udc.es)
+*/
+
 #ifndef LISTAARCHIVO_H
 #define LISTAARCHIVO_H
 

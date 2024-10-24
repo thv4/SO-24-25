@@ -1,5 +1,9 @@
-#include "listaArchivo.h"
+/*
+Mario Denis Radu Trifu (m.denis.radu@udc.es)
+Mario Ozón Casais (mario.ozon@udc.es)
+*/
 
+#include "listaArchivo.h"
 
 bool fCreateNode(ftPosL *p) {
     *p = malloc(sizeof(**p));

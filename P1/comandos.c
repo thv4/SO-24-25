@@ -182,6 +182,8 @@ void help(char * trozos[]) {
     if (trozos[1] == NULL) {
         printf("authors  pid  pppid  cd  date\n");
         printf("historic  open  dup  close  infosys\n");
+        printf("makefile  makedir  listfile  cwd  listdir\n");
+        printf("reclist  revlist  erase  delrec\n");
     } else if (strcmp(trozos[1],"authors")==0) {
         printf("authors [-n|-l]	Muestra los nombres y/o logins de los autores\n");
     }else if (strcmp(trozos[1],"pid")==0){
@@ -211,7 +213,40 @@ void help(char * trozos[]) {
         printf("dup df	Duplica el descriptor de fichero df y anade una nueva entrada a la lista ficheros abiertos\n");
     } else if (strcmp(trozos[1],"infosys")==0) {
         printf("infosys 	Muestra informacion de la maquina donde corre el shell\n");
-    } 
+    } else if (strcmp(trozos[1],"makefile")==0) {
+        printf("makefile [name]	Crea un fichero de nombre name\n");
+    } else if (strcmp(trozos[1],"makedir")==0) {
+        printf("makedir [name]	Crea un directorio de nombre name\n");
+    } else if (strcmp(trozos[1],"listfile")==0) {
+        printf("listfile [-long][-link][-acc] name1 name2 ..	lista ficheros;\n");
+        printf("\t-long: listado largo\n");
+        printf("\t-acc: acesstime\n");
+        printf("\t-link: si es enlace simbolico, el path contenido\n");
+    } else if (strcmp(trozos[1],"cwd")==0) {
+        printf("cwd 	Muestra el directorio actual del shell\n");
+    } else if (strcmp(trozos[1],"listdir")==0) {
+        printf("listdir [-hid][-long][-link][-acc] n1 n2 ..	lista contenidos de directorios\n");
+        printf("\t-long: listado largo\n");
+        printf("\t-hid: incluye los ficheros oculto\n");
+        printf("\t-acc: acesstime\n");
+        printf("\t-link: si es enlace simbolico, el path contenido\n");
+    } else if (strcmp(trozos[1],"reclist")==0) {
+        printf("reclist [-hid][-long][-link][-acc] n1 n2 ..	lista recursivamente contenidos de directorios (subdirs despues)\n");
+        printf("\t-long: listado largo\n");
+        printf("\t-hid: incluye los ficheros oculto\n");
+        printf("\t-acc: acesstime\n");
+        printf("\t-link: si es enlace simbolico, el path contenido\n");
+    } else if (strcmp(trozos[1],"revlist")==0) {
+        printf("revlist [-hid][-long][-link][-acc] n1 n2 ..	lista recursivamente contenidos de directorios (subdirs antes)\n");
+        printf("\t-long: listado largo\n");
+        printf("\t-hid: incluye los ficheros oculto\n");
+        printf("\t-acc: acesstime\n");
+        printf("\t-link: si es enlace simbolico, el path contenido\n");
+    } else if (strcmp(trozos[1],"erase")==0) {
+        printf("erase [name1 name2 ..]	Borra ficheros o directorios vacios\n");
+    } else if (strcmp(trozos[1],"delrec")==0) {
+        printf("delrec [name1 name2 ..]	Borra ficheros o directorios no vacios recursivamente\n");
+    }
 }
 
 void makefile(char * trozos[]){
@@ -258,7 +293,7 @@ void listfile(char * trozos[]){
         }
     }
 
-    for (; trozos[j] != NULL; j++) { // Bucle que recorre solo los archivos 
+    for (; trozos[j] != NULL; j++) { 
         
         struct stat file_stat;
 
@@ -405,25 +440,24 @@ void erase (char * trozos[]){
             stat(trozos[i],&info);
             if (stat(trozos[i], &info) == 0) {
                 if (S_ISREG(info.st_mode)) {
-                // archivo
+                // Archivo
                     if (remove(trozos[i]) == 0) {
                         printf("Archivo %s eliminado con éxito\n", trozos[i]);
                     } else {
                         perror("Error al eliminar el archivo");
                     }
                 } else if (S_ISDIR(info.st_mode)) {
-                    // directorio
+                    // Directorio
                     if (rmdir(trozos[i]) == 0) {
                         printf("Directorio %s eliminado con éxito\n", trozos[i]);
                     } else {
                         perror("Error al eliminar el directorio (debe estar vacío)");
                     }
                 } else {
-                    //ni un archivo ni un directorio (puede ser otro tipo de archivo)
+                    // Ni un archivo ni un directorio (puede ser otro tipo de archivo)
                     printf("%s no es un archivo ni un directorio\n", trozos[i]);
                 }
             } else {
-                // Si stat falla
                 perror("Error al obtener la información del archivo");
             }
         }
@@ -431,11 +465,10 @@ void erase (char * trozos[]){
 }
 
 void reclist(char * trozos[]) {
-    char path[1000];  // Para construir el path completo
+    char path[1000];  
     int showHidden = 0, showLong = 0, showLinks = 0, showAcc = 0;
-    
-    // Paso 1: Verificar si hay opciones (-hid, -long, -link, -acc)
-    int i = 1;  // Comenzamos en 1 porque trozos[0] es el comando 'reclist'
+    int i = 1; 
+
     while (trozos[i] != NULL && trozos[i][0] == '-') {
         if (strcmp(trozos[i], "-hid") == 0)
             showHidden = 1;
@@ -445,20 +478,53 @@ void reclist(char * trozos[]) {
             showLinks = 1;
         else if (strcmp(trozos[i], "-acc") == 0)
             showAcc = 1;
-        i++;  // Pasamos a la siguiente opción o argumento
+        i++;  
     }
-
-    // Paso 2: Si no hay directorios dados, usar el directorio actual "."
+    
     if (trozos[i] == NULL) {
         strcpy(path, ".");
-        listDirRecursively(path, showHidden, showLong, showLinks, showAcc);  // Llamada recursiva al listado
+        listDirRecursively(path, showHidden, showLong, showLinks, showAcc);
     } else {
-        // Paso 3: Listar los directorios dados en los argumentos
+
         for (; trozos[i] != NULL; i++) {
             struct stat info;
             if (stat(trozos[i], &info) == 0 && S_ISDIR(info.st_mode)) {
                 strcpy(path, trozos[i]);
                 listDirRecursively(path, showHidden, showLong, showLinks, showAcc);
+            } else {
+                printf("Error: %s no es un directorio válido\n", trozos[i]);
+            }
+        }
+    }
+}
+
+void revlist(char * trozos[]) {
+    char path[1000];
+    int showHidden = 0, showLong = 0, showLinks = 0, showAcc = 0;
+    int i = 1;
+
+    while (trozos[i] != NULL && trozos[i][0] == '-') {
+        if (strcmp(trozos[i], "-hid") == 0)
+            showHidden = 1;
+        else if (strcmp(trozos[i], "-long") == 0)
+            showLong = 1;
+        else if (strcmp(trozos[i], "-link") == 0)
+            showLinks = 1;
+        else if (strcmp(trozos[i], "-acc") == 0)
+            showAcc = 1;
+        i++;
+    }
+
+    if (trozos[i] == NULL) {
+        strcpy(path, ".");
+        revlistDirRecursively(path, showHidden, showLong, showLinks, showAcc);
+    } else {
+
+        for (; trozos[i] != NULL; i++) {
+            struct stat info;
+            if (stat(trozos[i], &info) == 0 && S_ISDIR(info.st_mode)) {
+                strcpy(path, trozos[i]);
+                revlistDirRecursively(path, showHidden, showLong, showLinks, showAcc);
             } else {
                 printf("Error: %s no es un directorio válido\n", trozos[i]);
             }
