@@ -38,3 +38,4 @@ void listdir(char * trozos[]);
 void erase (char * trozos[]);
 void reclist(char * trozos[]);
 void revlist(char * trozos[]);
+void delrec(char *trozos[]);

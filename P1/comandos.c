@@ -531,3 +531,37 @@ void revlist(char * trozos[]) {
         }
     }
 }
+
+void delrec(char *trozos[]) {
+    // Verificar si se pasaron argumentos
+    if (trozos[1] == NULL) {
+        fprintf(stderr, "Error: No se han especificado archivos o directorios para eliminar\n");
+        return;
+    }
+
+    // Recorrer los argumentos (archivos o directorios)
+    for (int i = 1; trozos[i] != NULL; i++) {
+        struct stat info;
+
+        // Obtener información sobre el archivo o directorio
+        if (stat(trozos[i], &info) == 0) {
+            if (S_ISREG(info.st_mode)) {
+                // Es un archivo regular
+                if (remove(trozos[i]) == 0) {
+                    printf("Archivo %s eliminado con éxito\n", trozos[i]);
+                } else {
+                    perror("Error al eliminar el archivo");
+                }
+            } else if (S_ISDIR(info.st_mode)) {
+                // Es un directorio, eliminar recursivamente
+                delrecDir(trozos[i]);
+            } else {
+                // No es ni un archivo ni un directorio válido
+                printf("%s no es un archivo ni un directorio válido\n", trozos[i]);
+            }
+        } else {
+            // Error al obtener la información del archivo o directorio
+            perror("Error al obtener la información del archivo/directorio");
+        }
+    }
+}

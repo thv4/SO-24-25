@@ -65,7 +65,9 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL) {
         reclist(trozos);
     } else if(strcmp(trozos[0],"revlist")==0) {
         revlist(trozos);
-    } else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
+    } else if(strcmp(trozos[0],"delrec")==0){
+        delrec(trozos);
+    }else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
         fDeleteList(fL);
         return true;
@@ -325,3 +327,46 @@ void revlistDirRecursively(char *basePath, int showHidden, int showLong, int sho
 
     closedir(dir);  
 }
+
+void delrecDir(char *path) {
+    struct dirent *dp;
+    DIR *dir = opendir(path);
+    char fullPath[1024];
+
+    if (!dir) {
+        perror("Error al abrir el directorio");
+        return;
+    }
+
+    while ((dp = readdir(dir)) != NULL) {
+        // Ignorar "." y ".."
+        if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0)
+            continue;
+
+        // Crear la ruta completa del archivo/directorio actual
+        snprintf(fullPath, sizeof(fullPath), "%s/%s", path, dp->d_name);
+
+        struct stat info;
+        if (stat(fullPath, &info) == 0) {
+            if (S_ISREG(info.st_mode)) {
+                // Eliminar archivos
+                if (remove(fullPath) != 0) {
+                    perror("Error al eliminar el archivo");
+                }
+            } else if (S_ISDIR(info.st_mode)) {
+                // Llamada recursiva para subdirectorios
+                delrecDir(fullPath);
+            }
+        }
+    }
+
+    closedir(dir);
+
+    // Eliminar el directorio una vez vaciado
+    if (rmdir(path) == 0) {
+        printf("Directorio %s eliminado con éxito\n", path);
+    } else {
+        perror("Error al eliminar el directorio");
+    }
+}
+

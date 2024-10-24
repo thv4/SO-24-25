@@ -19,3 +19,5 @@ void printLink(struct dirent * infofile);
 void listDirRecursively(char *basePath, int showHidden, int showLong, int showLinks, int showAcc);
 void printLink2(char * infofile);
 void revlistDirRecursively(char *basePath, int showHidden, int showLong, int showLinks, int showAcc);
+void delrecDir(char *path);
+
