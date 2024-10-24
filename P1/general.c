@@ -59,6 +59,8 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL) {
         listfile(trozos);
     }else if(strcmp(trozos[0],"listdir")==0){
         listdir(trozos);
+    }else if(strcmp(trozos[0],"erase")==0){
+        erase(trozos);
     }else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
         fDeleteList(fL);

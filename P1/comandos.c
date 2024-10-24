@@ -303,7 +303,7 @@ void cwd(){
     printf("%s\n", getcwd(directorio, sizeof directorio));
 }
 
-void listdir(char * trozos[]){
+void listdir(char * trozos[]){ //error de segmentación si se le pasa un directorio que no existe!!!!!!!!!!!!!!
     DIR *dir;
     struct dirent *infodir;
     bool lonG= false, hid = false, acc = false, link = false;
@@ -387,5 +387,40 @@ void listdir(char * trozos[]){
         }
     }
     closedir(dir);
+}
+
+void erase (char * trozos[]){ //revisar todos los casos!!!!!!!
+    
+    if(trozos[1]==NULL){
+        perror("Error: No se especificó el nombre del archivo a eliminar\n");
+    }else{
+        for(int i = 1; trozos[i]!=NULL; i++){
+            struct stat info;
+            stat(trozos[i],&info);
+            if (stat(trozos[i], &info) == 0) {
+                if (S_ISREG(info.st_mode)) {
+                // archivo
+                    if (remove(trozos[i]) == 0) {
+                        printf("Archivo %s eliminado con éxito\n", trozos[i]);
+                    } else {
+                        perror("Error al eliminar el archivo");
+                    }
+                } else if (S_ISDIR(info.st_mode)) {
+                    // directorio
+                    if (rmdir(trozos[i]) == 0) {
+                        printf("Directorio %s eliminado con éxito\n", trozos[i]);
+                    } else {
+                        perror("Error al eliminar el directorio (debe estar vacío)");
+                    }
+                } else {
+                    //ni un archivo ni un directorio (puede ser otro tipo de archivo)
+                    printf("%s no es un archivo ni un directorio\n", trozos[i]);
+                }
+            } else {
+                // Si stat falla
+                perror("Error al obtener la información del archivo");
+            }
+        }
+    }
 }
 
