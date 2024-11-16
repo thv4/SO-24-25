@@ -567,24 +567,25 @@ void delrec(char *trozos[]) {
     }
 }
 
-void allocate(char * trozos[], mtList * mL){
+void allocate(char *trozos[], mtList * mL){
     char * tr[10];
     if (trozos[1] == NULL) {
         mPrintList(NULL,*mL);
+        return;
     }
     if (strcmp(trozos[1], "-malloc") == 0) {
         tr[0] = trozos[2];
-        do_AllocateMalloc(tr, *mL);
+        do_AllocateMalloc(tr, mL);
     } else if (strcmp(trozos[1], "-mmap") == 0) {
         tr[0] = trozos[2];
         tr[1] = trozos[3];
-        do_AllocateMmap(tr, *mL);
+        do_AllocateMmap(tr, mL);
     } else if (strcmp(trozos[1], "-createshared") == 0) {
         tr[0] = trozos[2];
         tr[1] = trozos[3];
-        do_AllocateCreateshared(tr, *mL);
+        do_AllocateCreateshared(tr, mL);
     } else if (strcmp(trozos[1], "-shared") == 0) {
         tr[0] = trozos[2];
-        do_AllocateShared(tr, *mL);
+        do_AllocateShared(tr, mL);
     }
 }

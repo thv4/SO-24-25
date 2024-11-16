@@ -423,13 +423,14 @@ void do_AllocateMalloc(char *arg[], mtList *mL) {
         if (memAd == NULL) {
             perror("No se pudo reservar memoria");
         } else {
-            mItem.size = (size_t) arg[0];
-            strcpy(mItem.memAd, memAd);
+            mItem.size = atoi(arg[0]);
+            mItem.memAd = memAd;
             strcpy(mItem.type, "malloc");
             strcpy(mItem.other, "");
             mItem.fecha = time(NULL);
             mInsertElement(mItem, mL);
-            printf("Asignados %s bytes en %s", arg[0], memAd);
+            printf("Asignados %s bytes en %p\n", arg[0], mItem.memAd);
+            printf("Asignados %s bytes en %p\n", arg[0], memAd);
         }
     }
 

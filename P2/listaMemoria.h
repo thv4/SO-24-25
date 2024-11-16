@@ -9,11 +9,12 @@
 #include <stdlib.h>
 
 typedef char mtString[200];
+typedef char *miPuntero;
 typedef struct mtNode * mtPosL;
 
 typedef struct mtItemL {
-    mtString memAd;
-    size_t size;
+    miPuntero memAd;
+    int size;
     time_t fecha;
     mtString type;
     mtString other;
