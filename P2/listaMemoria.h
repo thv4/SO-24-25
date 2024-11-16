@@ -5,16 +5,18 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
+#include <stdlib.h>
 
-typedef char tString[200];
+typedef char mtString[200];
 typedef struct mtNode * mtPosL;
 
 typedef struct mtItemL {
-    tString memAd;
+    mtString memAd;
     size_t size;
     time_t fecha;
-    tString type;
-    tString other;
+    mtString type;
+    mtString other;
 } mtItemL;
 
 typedef struct mtNode {

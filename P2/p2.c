@@ -6,6 +6,7 @@ Mario Ozón Casais (mario.ozon@udc.es)
 #include "comandos.h"
 #include "general.h"
 #include "lista.h"
+#include "listaMemoria.h"
 
 int main(){
     char cadena[256];
@@ -15,9 +16,11 @@ int main(){
     tList lista;
     ftList listaArch;
     tItemL item;
+    mtList listaMem;
 
     createList(&lista);
     fCreateList(&listaArch);
+    mCreateList(&listaMem);
 
     while (true) {
         imprimirPromp();
@@ -38,7 +41,7 @@ int main(){
             }
         }
         i++;
-        if (numeroTrozos > 0 && procesarEntrada(trozos, lista, &listaArch)) {
+        if (numeroTrozos > 0 && procesarEntrada(trozos, lista, &listaArch, &listaMem)) {
             break;
         }
     }

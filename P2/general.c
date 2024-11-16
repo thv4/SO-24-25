@@ -6,6 +6,7 @@ Mario Ozón Casais (mario.ozon@udc.es)
 #include "general.h"
 #include "comandos.h"
 #include "listaArchivo.h"
+#include "listaMemoria.h"
 
 
 void imprimirPromp(){ printf("$ ");}
@@ -26,7 +27,7 @@ int TrocearCadena(char * cadena, char * trozos[]) {
     return i;
 }
 
-bool procesarEntrada(char * trozos[], tList L, ftList *fL) {
+bool procesarEntrada(char * trozos[], tList L, ftList *fL, mtList *mL) {
     if (strcmp(trozos[0],"authors")==0) {
         authors(trozos);
     }else if (strcmp(trozos[0],"pid")==0){
@@ -38,7 +39,7 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL) {
     } else if(strcmp(trozos[0],"date")==0){
         date(trozos);
     } else if(strcmp(trozos[0],"historic")==0) {
-        historic(trozos, L, * fL);
+        historic(trozos, L, * fL, * mL);
     } else if (strcmp(trozos[0],"open")==0){
         Cmd_open(trozos, fL);
     } else if (strcmp(trozos[0],"close")==0){
@@ -67,9 +68,12 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL) {
         revlist(trozos);
     } else if(strcmp(trozos[0],"delrec")==0){
         delrec(trozos);
-    }else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
+    } else if(strcmp(trozos[0],"allocate")==0) {
+        allocate(trozos, mL);
+    } else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
         fDeleteList(fL);
+        mDeleteList(mL);
         return true;
     }
     return false;
@@ -409,23 +413,29 @@ void * MapearFichero (char * fichero, int protection) {
     return p;
 }
 
-void do_AllocateMalloc(char *arg[]) {
+void do_AllocateMalloc(char *arg[], mtList *mL) {
     char * memAd;
+    mtItemL mItem;
     if (arg[0] == NULL) {
-        // {ImprimirListaMmap(&L); return;}
+        mPrintList("malloc",*mL);
     } else {
-        // Insertar en lista
         memAd = malloc(atoi(arg[0]));
         if (memAd == NULL) {
             perror("No se pudo reservar memoria");
         } else {
+            mItem.size = (size_t) arg[0];
+            strcpy(mItem.memAd, memAd);
+            strcpy(mItem.type, "malloc");
+            strcpy(mItem.other, "");
+            mItem.fecha = time(NULL);
+            mInsertElement(mItem, mL);
             printf("Asignados %s bytes en %s", arg[0], memAd);
         }
     }
 
 }
 
-void do_AllocateMmap(char *arg[]) { 
+void do_AllocateMmap(char *arg[], mtList *mL) { 
      char *perm;
      void *p;
      int protection=0;
@@ -443,7 +453,7 @@ void do_AllocateMmap(char *arg[]) {
              printf ("fichero %s mapeado en %p\n", arg[0], p);
 }
 
-void do_AllocateCreateshared (char *tr[]) {
+void do_AllocateCreateshared (char *tr[], mtList *mL) {
    key_t cl;
    size_t tam;
    void *p;
@@ -465,7 +475,7 @@ void do_AllocateCreateshared (char *tr[]) {
 		printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));
 }
 
-void do_AllocateShared (char *tr[]) {
+void do_AllocateShared (char *tr[], mtList *mL) {
    key_t cl;
    size_t tam;
    void *p;

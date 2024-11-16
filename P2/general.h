@@ -17,7 +17,7 @@ Mario Ozón Casais (mario.ozon@udc.es)
 void imprimirPromp();
 void leerEntrada(char * cadena, int tamaño);
 int TrocearCadena(char * cadena, char * trozos[]);
-bool procesarEntrada(char * trozos[], tList L, ftList *fL);
+bool procesarEntrada();
 void printPermisos(struct stat file_stat);
 void printFechaMod(struct stat file_stat);
 void printPropGrupo(struct stat file_stat);

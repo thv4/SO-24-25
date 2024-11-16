@@ -24,7 +24,7 @@ void pid();
 void ppid();
 void cd(char * trozos[]);
 void date(char * trozos[]);
-void historic(char * trozos[], tList L, ftList fL);
+void historic();
 void Cmd_open(char * tr[], ftList * L);
 void Cmd_close (char *tr[], ftList *L);
 void Cmd_dup (char * tr[], ftList *L);

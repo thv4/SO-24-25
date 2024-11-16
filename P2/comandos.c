@@ -6,6 +6,7 @@ Mario Ozón Casais (mario.ozon@udc.es)
 #include "comandos.h"
 #include "general.h"
 #include "listaArchivo.h"
+#include "listaMemoria.h"
 
 void authors(char * trozos[]) {
     if (trozos[1] != NULL && strcmp(trozos[1],"-l")==0){
@@ -56,7 +57,7 @@ void date(char * trozos[]) {
     }
 }
 
-void historic(char * trozos[], tList L, ftList fL) {
+void historic(char * trozos[], tList L, ftList fL, mtList mL) {
     int N, ultId = 0;
     tPosL comando;
     tItemL itemNuevo;
@@ -80,7 +81,7 @@ void historic(char * trozos[], tList L, ftList fL) {
             insertElement(itemNuevo, &L);
 
             TrocearCadena(copiaTrozo, trozo);
-            procesarEntrada(trozo, L, &fL);
+            procesarEntrada(trozo, L, &fL, &mL);
         }
     }
 }
@@ -566,22 +567,24 @@ void delrec(char *trozos[]) {
     }
 }
 
-void allocate(char * trozos[]){
+void allocate(char * trozos[], mtList * mL){
     char * tr[10];
-
+    if (trozos[1] == NULL) {
+        mPrintList(NULL,*mL);
+    }
     if (strcmp(trozos[1], "-malloc") == 0) {
         tr[0] = trozos[2];
-        do_AllocateMalloc();
+        do_AllocateMalloc(tr, *mL);
     } else if (strcmp(trozos[1], "-mmap") == 0) {
         tr[0] = trozos[2];
         tr[1] = trozos[3];
-        do_AllocateMmap(tr);
+        do_AllocateMmap(tr, *mL);
     } else if (strcmp(trozos[1], "-createshared") == 0) {
         tr[0] = trozos[2];
         tr[1] = trozos[3];
-        do_AllocateCreateshared();
+        do_AllocateCreateshared(tr, *mL);
     } else if (strcmp(trozos[1], "-shared") == 0) {
         tr[0] = trozos[2];
-        do_AllocateShared();
+        do_AllocateShared(tr, *mL);
     }
 }

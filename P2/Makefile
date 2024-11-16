@@ -1,5 +1,5 @@
-p2.out : p2.c comandos.h lista.h general.h comandos.o lista.o general.o listaArchivo.h listaArchivo.o
-	gcc -o p2.out p2.c comandos.o lista.o general.o listaArchivo.o -Wall
+p2.out : p2.c comandos.h lista.h general.h comandos.o lista.o general.o listaArchivo.h listaArchivo.o listaMemoria.h listaMemoria.o
+	gcc -o p2.out p2.c comandos.o lista.o general.o listaArchivo.o listaMemoria.o -Wall
 
 comandos.o : comandos.c comandos.h 
 	gcc -c comandos.c
@@ -11,7 +11,10 @@ general.o : general.c general.h
 	gcc -c general.c
 
 limpiar : 
-	rm p2.out comandos.o lista.o general.o listaArchivo.o
+	rm p2.out comandos.o lista.o general.o listaArchivo.o listaMemoria.o
 
 listaArchivo.o : listaArchivo.c listaArchivo.h
 	gcc -c listaArchivo.c
+
+listaMemoria.o : listaMemoria.c listaMemoria.h
+	gcc -c listaMemoria.c

@@ -1,4 +1,5 @@
 #include "listaMemoria.h"
+#include "comandos.h"
 
 bool mCreateNode(mtPosL *p) {
    *p = malloc(sizeof(**p));
@@ -91,24 +92,24 @@ void mPrintList (char tipo[], mtList L) {
        if(tipo == NULL) {
            fechaReserva = localtime(&i->data.fecha);
            strftime(sfecha, sizeof(sfecha),"%b %d %H:%M",fechaReserva);
-           printf("\t%s\t\t%d %s %s", i->data.memAd, i->data.size,sfecha, i->data.type);
+           printf("\t%s\t\t%ld %s %s", i->data.memAd, i->data.size,sfecha, i->data.type);
        } else {
            if (strcmp(tipo, i->data.type) == 0) {
               fechaReserva = localtime(&i->data.fecha);
                strftime(sfecha, sizeof(sfecha),"%b %d %H:%M",fechaReserva);
-               printf("\t%s\t\t%d %s %s", i->data.memAd, i->data.size,sfecha, i->data.type);
+               printf("\t%s\t\t%ld %s %s", i->data.memAd, i->data.size,sfecha, i->data.type);
            } else if (strcmp(tipo, i->data.type) == 0) {
                fechaReserva = localtime(&i->data.fecha);
                strftime(sfecha, sizeof(sfecha),"%b %d %H:%M",fechaReserva);
-               printf("\t%s\t\t%d %s %s (key %s)", i->data.memAd, i->data.size,sfecha, i->data.type,i->data.other);
+               printf("\t%s\t\t%ld %s %s (key %s)", i->data.memAd, i->data.size,sfecha, i->data.type,i->data.other);
            } else if (strcmp(tipo, i->data.type) == 0) {
                fechaReserva = localtime(&i->data.fecha);
                strftime(sfecha, sizeof(sfecha),"%b %d %H:%M",fechaReserva);
-               printf("\t%s\t\t%d %s %s (key %s)", i->data.memAd, i->data.size,sfecha, i->data.type, i->data.other);
+               printf("\t%s\t\t%ld %s %s (key %s)", i->data.memAd, i->data.size,sfecha, i->data.type, i->data.other);
            } else {
                fechaReserva = localtime(&i->data.fecha);
                strftime(sfecha, sizeof(sfecha),"%b %d %H:%M",fechaReserva);
-               printf("\t%s\t\t%d %s %s (descriptor %s)", i->data.memAd, i->data.size,sfecha, i->data.type, i->data.other);
+               printf("\t%s\t\t%ld %s %s (descriptor %s)", i->data.memAd, i->data.size,sfecha, i->data.type, i->data.other);
            }
        }
    }
