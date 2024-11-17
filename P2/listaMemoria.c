@@ -97,11 +97,13 @@ void mPrintList (char tipo[], mtList L) {
            fechaReserva = localtime(&i->data.fecha);
            strftime(sfecha, sizeof(sfecha),"%b %d %H:%M",fechaReserva);
            printf("\t%p\t\t%d %s %s ", i->data.memAd, i->data.size,sfecha, i->data.type);
-           if (strcmp(tipo, "shared") == 0) {
-                printf("%s (descriptor %d)\n", i->data.type, i->data.other2);
-           } else {
-                printf("\n");
+           if (strcmp(i->data.type, "shared") == 0) {
+                printf("%s (descriptor %d)", i->data.type, i->data.other2);
            }
+           if (strcmp(i->data.type, "mmap") == 0) {
+                printf("%s (descriptor %d)", i->data.other1, i->data.other2);
+           }
+           printf("\n");
        } else {
            if (strcmp(tipo, "malloc") == 0 && strcmp(tipo, i->data.type) == 0) { // impresion malloc
               fechaReserva = localtime(&i->data.fecha);
