@@ -77,6 +77,6 @@ void fPrintList (ftList L) {
     ftPosL i;
 
     for (i = L; i != NULL; i = i->next) {
-        printf("%d   %s   %d\n", i->data.descriptor, i->data.fname, i->data.OpMode);
+        printf("descriptor: %d   name: %s   open mode: %d\n", i->data.descriptor, i->data.fname, i->data.OpMode);
     }
 }

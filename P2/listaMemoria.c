@@ -37,10 +37,10 @@ mtPosL mFindItem(size_t size, char filtro[], char tipo[], mtList L) {
        if ((i->data.size == size) && (strcmp(i->data.type, tipo))) {
            return i;
        }
-       if (strcmp(i->data.other, filtro) && (strcmp(i->data.type, tipo))) {
+       if (strcmp(i->data.other1, filtro) && (strcmp(i->data.type, tipo))) {
            return i;
        }
-       if (strcmp(i->data.other, filtro) && (strcmp(i->data.type, tipo))) {
+       if (strcmp(i->data.other1, filtro) && (strcmp(i->data.type, tipo))) {
            return i;
        }
    }
@@ -93,27 +93,28 @@ void mPrintList (char tipo[], mtList L) {
    }
 
    for (i=L; i != NULL; i= i->next) {
-       if(tipo == NULL) {
+       if(tipo == NULL) { // impresión sin filtros 
            fechaReserva = localtime(&i->data.fecha);
            strftime(sfecha, sizeof(sfecha),"%b %d %H:%M",fechaReserva);
-           printf("\t%p\t\t%d %s %s\n", i->data.memAd, i->data.size,sfecha, i->data.type);
+           printf("\t%p\t\t%d %s %s ", i->data.memAd, i->data.size,sfecha, i->data.type);
+           if (strcmp(tipo, "shared") == 0) {
+                printf("%s (descriptor %d)\n", i->data.type, i->data.other2);
+           } else {
+                printf("\n");
+           }
        } else {
-           if (strcmp(tipo, i->data.type) == 0) {
+           if (strcmp(tipo, "malloc") == 0 && strcmp(tipo, i->data.type) == 0) { // impresion malloc
               fechaReserva = localtime(&i->data.fecha);
                strftime(sfecha, sizeof(sfecha),"%b %d %H:%M",fechaReserva);
                printf("\t%p\t\t%d %s %s\n", i->data.memAd, i->data.size,sfecha, i->data.type);
-           } else if (strcmp(tipo, i->data.type) == 0) {
+           } else if (strcmp(tipo, "shared") == 0 && strcmp(tipo, i->data.type) == 0) {  // impresion shared
                fechaReserva = localtime(&i->data.fecha);
                strftime(sfecha, sizeof(sfecha),"%b %d %H:%M",fechaReserva);
-               printf("\t%p\t\t%d %s %s (key %s)\n", i->data.memAd, i->data.size,sfecha, i->data.type,i->data.other);
-           } else if (strcmp(tipo, i->data.type) == 0) {
+               printf("\t%p\t\t%d %s %s (key %d)\n", i->data.memAd, i->data.size,sfecha, i->data.type,i->data.other2);
+           }  else if (strcmp(tipo, "mmap") == 0 && strcmp(tipo, i->data.type) == 0){ // impresion mmap
                fechaReserva = localtime(&i->data.fecha);
                strftime(sfecha, sizeof(sfecha),"%b %d %H:%M",fechaReserva);
-               printf("\t%p\t\t%d %s %s (key %s)\n", i->data.memAd, i->data.size,sfecha, i->data.type, i->data.other);
-           } else {
-               fechaReserva = localtime(&i->data.fecha);
-               strftime(sfecha, sizeof(sfecha),"%b %d %H:%M",fechaReserva);
-               printf("\t%p\t\t%d %s %s (descriptor %s)\n", i->data.memAd, i->data.size,sfecha, i->data.type, i->data.other);
+               printf("\t%p\t\t%d %s %s (descriptor %d)\n", i->data.memAd, i->data.size,sfecha, i->data.other1, i->data.other2);
            }
        }
    }

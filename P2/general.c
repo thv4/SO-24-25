@@ -69,7 +69,7 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL, mtList *mL) {
     } else if(strcmp(trozos[0],"delrec")==0){
         delrec(trozos);
     } else if(strcmp(trozos[0],"allocate")==0) {
-        allocate(trozos, mL);
+        allocate(trozos, mL, fL);
     } else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
         fDeleteList(fL);
@@ -374,10 +374,85 @@ void delrecDir(char *path) {
     }
 }
 
-void * ObtenerMemoriaShmget (key_t clave, size_t tam) {
+void do_AllocateMalloc(char *arg[], mtList *mL) {
+    char * memAd;
+    mtItemL mItem;
+    if (arg[0] == NULL) {
+        mPrintList("malloc",*mL);
+    } else {
+        memAd = malloc(atoi(arg[0]));
+        if (memAd == NULL) {
+            perror("No se pudo reservar memoria");
+        } else {
+            mItem.size = atoi(arg[0]);
+            mItem.memAd = memAd;
+            strcpy(mItem.type, "malloc");
+            strcpy(mItem.other1, "");
+            mItem.other2 = -1;
+            mItem.fecha = time(NULL);
+            mInsertElement(mItem, mL);
+            printf("Asignados %s bytes en %p\n", arg[0], mItem.memAd);
+        }
+    }
+
+}
+
+void * MapearFichero (char * fichero, int protection, mtList *mL, ftList *fL) {
+    int df, map=MAP_PRIVATE,modo=O_RDONLY;
+    struct stat s;
+    void *p;
+    mtItemL mItem;
+    ftItemL fItem;
+    char aux[100];
+
+    if (protection&PROT_WRITE)
+          modo=O_RDWR;
+    if (stat(fichero,&s)==-1 || (df=open(fichero, modo))==-1)
+          return NULL;
+    if ((p=mmap (NULL,s.st_size, protection,map,df,0))==MAP_FAILED)
+           return NULL;
+    mItem.size = s.st_size;
+    mItem.memAd = p;
+    strcpy(mItem.type, "mmap");
+    strcpy(mItem.other1, fichero);
+    mItem.other2 = df;
+    mItem.fecha = time(NULL);
+    mInsertElement(mItem, mL);
+    
+    fItem.descriptor = df;
+    fItem.OpMode = (mode_t) modo;
+    sprintf(aux,"Mapeo de %s",fichero);
+    strcpy(fItem.fname, aux);
+    fInsertElement(fItem, fL);
+    
+    return p;
+}
+
+void do_AllocateMmap(char *arg[], mtList *mL, ftList *fL) { 
+     char *perm;
+     void *p;
+     int protection=0;
+     
+     if (arg[0]==NULL) {
+        mPrintList("mmap", *mL); 
+        return;
+     }
+     if ((perm=arg[1])!=NULL && strlen(perm)<4) {
+            if (strchr(perm,'r')!=NULL)protection|=PROT_READ; 
+            if (strchr(perm,'w')!=NULL) protection|=PROT_WRITE;
+            if (strchr(perm,'x')!=NULL) protection|=PROT_EXEC;
+     }
+     if ((p=MapearFichero(arg[0],protection, mL, fL))==NULL)
+             perror ("Imposible mapear fichero");
+     else
+             printf ("fichero %s mapeado en %p\n", arg[0], p);
+}
+
+void * ObtenerMemoriaShmget (key_t clave, size_t tam, mtList *mL) {
     void * p;
     int aux,id,flags=0777;
     struct shmid_ds s;
+    mtItemL mItem;
 
     if (tam)     /*tam distito de 0 indica crear */
         flags=flags | IPC_CREAT | IPC_EXCL; /*cuando no es crear pasamos de tamano 0*/
@@ -394,64 +469,15 @@ void * ObtenerMemoriaShmget (key_t clave, size_t tam) {
     }
     shmctl (id,IPC_STAT,&s); /* si no es crear, necesitamos el tamano, que es s.shm_segsz*/
  /* Guardar en la lista   InsertarNodoShared (&L, p, s.shm_segsz, clave); */
+    mItem.size = s.shm_segsz;
+    mItem.memAd = p;
+    strcpy(mItem.type, "shared");
+    strcpy(mItem.other1, "");
+    mItem.other2 = clave;
+    mItem.fecha = time(NULL);
+    mInsertElement(mItem, mL);
+    
     return (p);
-}
-
-void * MapearFichero (char * fichero, int protection) {
-    int df, map=MAP_PRIVATE,modo=O_RDONLY;
-    struct stat s;
-    void *p;
-
-    if (protection&PROT_WRITE)
-          modo=O_RDWR;
-    if (stat(fichero,&s)==-1 || (df=open(fichero, modo))==-1)
-          return NULL;
-    if ((p=mmap (NULL,s.st_size, protection,map,df,0))==MAP_FAILED)
-           return NULL;
-/* Guardar en la lista    InsertarNodoMmap (&L,p, s.st_size,df,fichero); */
-/* Gurdas en la lista de descriptores usados df, fichero*/
-    return p;
-}
-
-void do_AllocateMalloc(char *arg[], mtList *mL) {
-    char * memAd;
-    mtItemL mItem;
-    if (arg[0] == NULL) {
-        mPrintList("malloc",*mL);
-    } else {
-        memAd = malloc(atoi(arg[0]));
-        if (memAd == NULL) {
-            perror("No se pudo reservar memoria");
-        } else {
-            mItem.size = atoi(arg[0]);
-            mItem.memAd = memAd;
-            strcpy(mItem.type, "malloc");
-            strcpy(mItem.other, "");
-            mItem.fecha = time(NULL);
-            mInsertElement(mItem, mL);
-            printf("Asignados %s bytes en %p\n", arg[0], mItem.memAd);
-            printf("Asignados %s bytes en %p\n", arg[0], memAd);
-        }
-    }
-
-}
-
-void do_AllocateMmap(char *arg[], mtList *mL) { 
-     char *perm;
-     void *p;
-     int protection=0;
-     
-     if (arg[0]==NULL)
-           // {ImprimirListaMmap(&L); return;}
-     if ((perm=arg[1])!=NULL && strlen(perm)<4) {
-            if (strchr(perm,'r')!=NULL)protection|=PROT_READ; 
-            if (strchr(perm,'w')!=NULL) protection|=PROT_WRITE;
-            if (strchr(perm,'x')!=NULL) protection|=PROT_EXEC;
-     }
-     if ((p=MapearFichero(arg[0],protection))==NULL)
-             perror ("Imposible mapear fichero");
-     else
-             printf ("fichero %s mapeado en %p\n", arg[0], p);
 }
 
 void do_AllocateCreateshared (char *tr[], mtList *mL) {
@@ -460,7 +486,7 @@ void do_AllocateCreateshared (char *tr[], mtList *mL) {
    void *p;
 
    if (tr[0]==NULL || tr[1]==NULL) {
-		//ImprimirListaShared(&L);
+		mPrintList("shared", *mL);
 		return;
    }
   
@@ -470,7 +496,7 @@ void do_AllocateCreateshared (char *tr[], mtList *mL) {
 	printf ("No se asignan bloques de 0 bytes\n");
 	return;
    }
-   if ((p=ObtenerMemoriaShmget(cl,tam))!=NULL)
+   if ((p=ObtenerMemoriaShmget(cl,tam, mL))!=NULL)
 		printf ("Asignados %lu bytes en %p\n",(unsigned long) tam, p);
    else
 		printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));
@@ -482,13 +508,13 @@ void do_AllocateShared (char *tr[], mtList *mL) {
    void *p;
 
    if (tr[0]==NULL) {
-		//ImprimirListaShared(&L);
+		mPrintList("shared", *mL);
 		return;
    }
   
    cl=(key_t)strtoul(tr[0],NULL,10);
 
-   if ((p=ObtenerMemoriaShmget(cl,0))!=NULL)
+   if ((p=ObtenerMemoriaShmget(cl,0, mL))!=NULL)
 		printf ("Asignada memoria compartida de clave %lu en %p\n",(unsigned long) cl, p);
    else
 		printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));

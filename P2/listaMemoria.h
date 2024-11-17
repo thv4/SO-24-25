@@ -17,7 +17,8 @@ typedef struct mtItemL {
     int size;
     time_t fecha;
     mtString type;
-    mtString other;
+    mtString other1;
+    int other2;
 } mtItemL;
 
 typedef struct mtNode {

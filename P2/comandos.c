@@ -567,7 +567,7 @@ void delrec(char *trozos[]) {
     }
 }
 
-void allocate(char *trozos[], mtList * mL){
+void allocate(char *trozos[], mtList * mL, ftList * fL){
     char * tr[10];
     if (trozos[1] == NULL) {
         mPrintList(NULL,*mL);
@@ -579,7 +579,7 @@ void allocate(char *trozos[], mtList * mL){
     } else if (strcmp(trozos[1], "-mmap") == 0) {
         tr[0] = trozos[2];
         tr[1] = trozos[3];
-        do_AllocateMmap(tr, mL);
+        do_AllocateMmap(tr, mL, fL);
     } else if (strcmp(trozos[1], "-createshared") == 0) {
         tr[0] = trozos[2];
         tr[1] = trozos[3];
