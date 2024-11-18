@@ -31,18 +31,34 @@ bool mInsertElement(mtItemL d, mtList *L) {
    }
 }
 
-mtPosL mFindItem(size_t size, char filtro[], char tipo[], mtList L) {
+mtPosL mFindItem(char tipo[], int filtro[], char filtro2[], mtList L) {
    mtPosL i;
    for(i=L; i != NULL; i = i->next) {
-       if ((i->data.size == size) && (strcmp(i->data.type, tipo))) {
-           return i;
-       }
-       if (strcmp(i->data.other1, filtro) && (strcmp(i->data.type, tipo))) {
-           return i;
-       }
-       if (strcmp(i->data.other1, filtro) && (strcmp(i->data.type, tipo))) {
-           return i;
-       }
+        if ((strcmp("malloc",i->data.type) == 0) && (strcmp(i->data.type, tipo) == 0)) {
+            if ((i->data.size == filtro)) {
+                return i;
+            }
+        }
+        if ((strcmp("shared",i->data.type) == 0) && (strcmp(i->data.type, tipo) == 0)) {
+            if (i->data.other2 == filtro) {
+                return i;
+            }
+        }
+        if((strcmp("mmap",i->data.type) == 0) && (strcmp(i->data.type, tipo) == 0)) {
+            if (strcmp(i->data.other1,filtro2) == 0) {
+                return i;
+            }
+        }
+   }
+   return NULL;
+}
+
+mtPosL mFindMemAd(char *tr[], mtList L) {
+    mtPosL i;
+   for(i=L; i != NULL; i = i->next) {
+        if(strcmp(tr[0], i->data.memAd) == 0){
+            return i;
+        }
    }
    return NULL;
 }

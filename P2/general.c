@@ -70,6 +70,8 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL, mtList *mL) {
         delrec(trozos);
     } else if(strcmp(trozos[0],"allocate")==0) {
         allocate(trozos, mL, fL);
+    } else if(strcmp(trozos[0],"deallocate")==0) {
+        deallocate(trozos, mL, fL);
     } else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
         fDeleteList(fL);
@@ -520,3 +522,106 @@ void do_AllocateShared (char *tr[], mtList *mL) {
 		printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) cl,strerror(errno));
 }
 
+void do_DeallocateMalloc (char *arg[], mtList *mL) {
+    mtPosL pos;
+    char * memAd;
+
+    if (arg[0] == NULL) {
+        mPrintList("malloc",*mL);
+    } else {
+        pos = mFindItem("malloc", atoi(arg[0]), NULL, *mL);
+        if (pos == NULL) {
+            perror("No hay bloque de ese tamano asignado con malloc");
+        } else {
+            memAd = pos->data.memAd;
+            free(memAd);
+            mRemoveElement(pos,mL);
+        }
+    }
+}
+
+void do_DeallocateMmap(char *arg[], mtList *mL, ftList *fL) {
+    mtPosL pos;
+    ftPosL pos2;
+    char * memAd;
+    int size;
+
+    if (arg[0] == NULL) {
+        mPrintList("mmap",*mL);
+    } else {
+        pos = mFindItem("mmap", NULL, arg[0], *mL);
+        if (pos == NULL) {
+            printf("Fichero %s no mapeado\n", arg[0]);
+        } else {
+            memAd = pos->data.memAd;
+            size = pos->data.size;
+            if (munmap(memAd, size) == -1) {
+                perror("Error al eliminar el map");
+            } else {
+                pos2 = fFindItem(pos2->data.descriptor,*fL);
+                if (close(pos2->data.descriptor) != -1) {
+                    mRemoveElement(pos, mL);
+                    fRemoveElement(pos2, fL);
+                }
+            }
+        }
+    }
+}
+
+void do_DeallocateDelkey (char *args[]) {
+   key_t clave;
+   int id;
+   char *key=args[0];
+
+   if (key==NULL || (clave=(key_t) strtoul(key,NULL,10))==IPC_PRIVATE){
+        printf ("      delkey necesita clave_valida\n");
+        return;
+   }
+   if ((id=shmget(clave,0,0666))==-1){
+        perror ("shmget: imposible obtener memoria compartida");
+        return;
+   }
+   if (shmctl(id,IPC_RMID,NULL)==-1)
+        perror ("shmctl: imposible eliminar memoria compartida\n");
+}
+
+void do_DeallocateShared(char *tr[], mtList *mL) {
+    mtPosL pos;
+    char * memAd;
+
+    if (tr[0] == NULL) {
+        mPrintList("shared",*mL);
+    } else {
+        pos = mFindItem("shared", atoi(tr[0]), NULL, *mL);
+        if (pos == NULL) {
+            perror("No hay bloque de esa clave mapeado en el proceso");
+        } else {
+            memAd = pos->data.memAd;
+            shmdt(memAd);
+            mRemoveElement(pos,mL);
+        }
+    }
+}
+
+void do_DeallocateGenerico(char *arg[], mtList *mL, ftList *fL) {
+    mtString type;
+    mtPosL pos;
+    char * tr[10];
+
+    pos = mFindMemAd(arg[0],*mL); 
+    if (pos == NULL) {
+        perror("Direccion de memoria no encontrada");
+    } else {
+        strcpy(type, pos->data.type);
+        if (strcmp(type,"malloc") == 0) {
+            tr[0] = pos->data.size; 
+            do_DeallocateMalloc(tr, mL);
+        } else if (strcmp(type,"shared") == 0) {
+            tr[0] = pos->data.other2;
+            do_DeallocateShared(tr, mL);
+        } else if (strcmp(type,"mmap") == 0) {
+            tr[0] = pos->data.other2;
+            do_DeallocateMmap(tr, mL, fL);
+        }
+    }
+}

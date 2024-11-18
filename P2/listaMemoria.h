@@ -32,6 +32,7 @@ bool mCreateNode();
 void mCreateList();
 bool mInsertElement();
 mtPosL mFindItem();
+mtPosL mFindMemAd();
 void mRemoveElement();
 void mDeleteList();
 void mPrintList();

@@ -589,3 +589,27 @@ void allocate(char *trozos[], mtList * mL, ftList * fL){
         do_AllocateShared(tr, mL);
     }
 }
+
+void deallocate(char *trozos[], mtList * mL, ftList * fL) {
+    char * tr[10];
+    if (trozos[1] == NULL) {
+        mPrintList(NULL,*mL);
+        return;
+    }
+    if (strcmp(trozos[1], "-malloc") == 0) {
+        tr[0] = trozos[2];
+        do_DeallocateMalloc(tr, mL);
+    } else if (strcmp(trozos[1], "-mmap") == 0) {
+        tr[0] = trozos[2];
+        do_DeallocateMmap(tr, mL, fL);
+    } else if (strcmp(trozos[1], "-shared") == 0) {
+        tr[0] = trozos[2];
+        do_AllocateShared(tr, mL);
+    } else if (strcmp(trozos[1], "-delkey") == 0) {
+        tr[0] = trozos[2];
+        do_DeallocateDelkey(tr);        
+    } else {
+        tr[0] = trozos[2];
+        do_DeallocateGenerico(tr, mL, fL);
+    }
+}

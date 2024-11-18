@@ -34,3 +34,8 @@ void do_AllocateMmap();
 void do_AllocateCreateshared();
 void do_AllocateShared();
 
+void do_DeallocateMalloc();
+void do_DeallocateMmap();
+void do_DeallocateDelkey();
+void do_DeallocateShared();
+void do_DeallocateGenerico();
