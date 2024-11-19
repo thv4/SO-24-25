@@ -56,10 +56,11 @@ mtPosL mFindItem(char tipo[], int filtro, char filtro2[], mtList L) {
 
 mtPosL mFindMemAd(char *tr[], mtList L) {
     mtPosL i;
-    char * cadena;
-    cadena = strtok(tr[0]," \0");
+    char * memAd;
+
    for(i=L; i != NULL; i = i->next) {
-        if(cadena == i->data.memAd){
+        sscanf(tr[0], "%p", &memAd); // Pasar de string a puntero
+        if(i->data.memAd == memAd){
             return i;
         }
    }

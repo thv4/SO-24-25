@@ -622,7 +622,7 @@ void do_DeallocateGenerico(char *arg[], mtList *mL, ftList *fL) {
             sprintf(tr[0], "%d", pos->data.other2);
             do_DeallocateShared(tr, mL);
         } else if (strcmp(type,"mmap") == 0) {
-            sprintf(tr[0], "%d", pos->data.other2);
+            sprintf(tr[0], "%s", pos->data.other1);
             do_DeallocateMmap(tr, mL, fL);
         }
     }
