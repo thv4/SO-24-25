@@ -31,8 +31,9 @@ bool mInsertElement(mtItemL d, mtList *L) {
    }
 }
 
-mtPosL mFindItem(char tipo[], int filtro[], char filtro2[], mtList L) {
+mtPosL mFindItem(char tipo[], int filtro, char filtro2[], mtList L) {
    mtPosL i;
+   mtItemL item;
    for(i=L; i != NULL; i = i->next) {
         if ((strcmp("malloc",i->data.type) == 0) && (strcmp(i->data.type, tipo) == 0)) {
             if ((i->data.size == filtro)) {
@@ -55,8 +56,10 @@ mtPosL mFindItem(char tipo[], int filtro[], char filtro2[], mtList L) {
 
 mtPosL mFindMemAd(char *tr[], mtList L) {
     mtPosL i;
+    char * cadena;
+    cadena = strtok(tr[0]," \0");
    for(i=L; i != NULL; i = i->next) {
-        if(strcmp(tr[0], i->data.memAd) == 0){
+        if(cadena == i->data.memAd){
             return i;
         }
    }
@@ -112,9 +115,12 @@ void mPrintList (char tipo[], mtList L) {
        if(tipo == NULL) { // impresión sin filtros 
            fechaReserva = localtime(&i->data.fecha);
            strftime(sfecha, sizeof(sfecha),"%b %d %H:%M",fechaReserva);
-           printf("\t%p\t\t%d %s %s ", i->data.memAd, i->data.size,sfecha, i->data.type);
+           printf("\t%p\t\t%d %s ", i->data.memAd, i->data.size,sfecha);
+           if (strcmp(i->data.type, "malloc") == 0) {
+                printf("%s", i->data.type);
+           }
            if (strcmp(i->data.type, "shared") == 0) {
-                printf("%s (descriptor %d)", i->data.type, i->data.other2);
+                printf("%s (key %d)",i->data.type, i->data.other2);
            }
            if (strcmp(i->data.type, "mmap") == 0) {
                 printf("%s (descriptor %d)", i->data.other1, i->data.other2);

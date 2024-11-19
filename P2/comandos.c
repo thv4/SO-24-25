@@ -604,12 +604,12 @@ void deallocate(char *trozos[], mtList * mL, ftList * fL) {
         do_DeallocateMmap(tr, mL, fL);
     } else if (strcmp(trozos[1], "-shared") == 0) {
         tr[0] = trozos[2];
-        do_AllocateShared(tr, mL);
+        do_DeallocateShared(tr, mL);
     } else if (strcmp(trozos[1], "-delkey") == 0) {
         tr[0] = trozos[2];
         do_DeallocateDelkey(tr);        
     } else {
-        tr[0] = trozos[2];
+        tr[0] = trozos[1];
         do_DeallocateGenerico(tr, mL, fL);
     }
 }

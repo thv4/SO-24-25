@@ -558,11 +558,13 @@ void do_DeallocateMmap(char *arg[], mtList *mL, ftList *fL) {
             if (munmap(memAd, size) == -1) {
                 perror("Error al eliminar el map");
             } else {
-                pos2 = fFindItem(pos2->data.descriptor,*fL);
-                if (close(pos2->data.descriptor) != -1) {
-                    mRemoveElement(pos, mL);
-                    fRemoveElement(pos2, fL);
+                pos2 = fFindItem(pos->data.other2,*fL);
+                if (pos2 != NULL) {
+                    if (close(pos2->data.descriptor) != -1) {
+                        fRemoveElement(pos2, fL);
+                    }
                 }
+                mRemoveElement(pos, mL);
             }
         }
     }
@@ -607,20 +609,20 @@ void do_DeallocateGenerico(char *arg[], mtList *mL, ftList *fL) {
     mtString type;
     mtPosL pos;
     char * tr[10];
-
-    pos = mFindMemAd(arg[0],*mL); 
+    
+    pos = mFindMemAd(arg,*mL);
     if (pos == NULL) {
         perror("Direccion de memoria no encontrada");
     } else {
         strcpy(type, pos->data.type);
         if (strcmp(type,"malloc") == 0) {
-            tr[0] = pos->data.size; 
+            sprintf(tr[0], "%d", pos->data.size); 
             do_DeallocateMalloc(tr, mL);
         } else if (strcmp(type,"shared") == 0) {
-            tr[0] = pos->data.other2;
+            sprintf(tr[0], "%d", pos->data.other2);
             do_DeallocateShared(tr, mL);
         } else if (strcmp(type,"mmap") == 0) {
-            tr[0] = pos->data.other2;
+            sprintf(tr[0], "%d", pos->data.other2);
             do_DeallocateMmap(tr, mL, fL);
         }
     }
