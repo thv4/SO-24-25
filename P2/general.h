@@ -39,3 +39,5 @@ void do_DeallocateMmap();
 void do_DeallocateDelkey();
 void do_DeallocateShared();
 void do_DeallocateGenerico();
+
+void LlenarMemoria(void *p, size_t cont, unsigned char byte);

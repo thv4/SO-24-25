@@ -72,7 +72,9 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL, mtList *mL) {
         allocate(trozos, mL, fL);
     } else if(strcmp(trozos[0],"deallocate")==0) {
         deallocate(trozos, mL, fL);
-    } else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
+    } else if (strcmp(trozos[0],"memfill")==0){
+        memfill(trozos);
+    }else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
         fDeleteList(fL);
         mDeleteList(mL);
@@ -626,4 +628,12 @@ void do_DeallocateGenerico(char *arg[], mtList *mL, ftList *fL) {
             do_DeallocateMmap(tr, mL, fL);
         }
     }
+}
+
+void LlenarMemoria(void *p, size_t cont, unsigned char byte) {
+  unsigned char *arr=(unsigned char *) p;
+  size_t i;
+  for (i=0; i<cont;i++) {
+    	arr[i]=byte;
+  }
 }

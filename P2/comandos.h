@@ -42,3 +42,5 @@ void delrec(char *trozos[]);
 
 void allocate();
 void deallocate();
+
+void memfill(char *trozos[]);

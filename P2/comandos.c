@@ -613,3 +613,10 @@ void deallocate(char *trozos[], mtList * mL, ftList * fL) {
         do_DeallocateGenerico(tr, mL, fL);
     }
 }
+
+void memfill(char *trozos[]) {
+    void * memAd;
+    sscanf(trozos[1], "%p", &memAd); 
+    printf("dentro\n");
+    LlenarMemoria(memAd, strtoul(trozos[2],NULL,10) , strtoul(trozos[3],NULL,10));
+}
