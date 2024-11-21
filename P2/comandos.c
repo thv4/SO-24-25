@@ -162,7 +162,7 @@ void Cmd_dup (char * tr[], ftList *L) {
     }
 
     p = original->data.fname;
-    sprintf (aux,"dup %d (%s)",df, p);
+    sprintf (aux,"dup %d : %s",df, p);
 
     copia.descriptor = duplicado;
     strcpy(copia.fname, aux);
@@ -616,7 +616,110 @@ void deallocate(char *trozos[], mtList * mL, ftList * fL) {
 
 void memfill(char *trozos[]) {
     void * memAd;
+    unsigned char byte = strtoul(trozos[3],NULL,10);
+    unsigned char cont = strtoul(trozos[2],NULL,10);
+
     sscanf(trozos[1], "%p", &memAd); 
-    printf("dentro\n");
-    LlenarMemoria(memAd, strtoul(trozos[2],NULL,10) , strtoul(trozos[3],NULL,10));
+    printf("Llenando %s bytes de memoria con el byte  %c(%X) a partir de la direccion %s\n", trozos[2],(char)byte,byte,trozos[1]);
+    LlenarMemoria(memAd, cont, byte);
+}
+
+void memdump(char *trozos[]) {
+    unsigned char *arr;
+    size_t i;
+    void * memAd;
+
+    sscanf(trozos[1], "%p", &memAd);
+    arr=(unsigned char *) memAd;
+
+    for (i=0; i<atoi(trozos[2]);i++) {
+        printf("%4c",(char)arr[i]);
+    }
+    printf("\n");
+    for (i=0; i<atoi(trozos[2]);i++) {
+        printf("%4X",arr[i]);
+    }
+    printf("\n");
+}
+
+void memory(char *trozos[],  mtList * mL) {
+
+    if (trozos[1] == NULL || strcmp(trozos[1], "-all") == 0) {
+        do_MemoryVars();
+        printf("\n");
+        do_MemoryFuncs();
+        printf("\n");
+        mPrintList(NULL, *mL);
+    } else if (strcmp(trozos[1], "-vars") == 0) {
+        do_MemoryVars();
+    } else if (strcmp(trozos[1], "-blocks") == 0) {
+        mPrintList(NULL,*mL);
+    } else if (strcmp(trozos[1], "-pmap") == 0) {
+        Do_pmap();
+    } else if (strcmp(trozos[1], "-funcs") == 0){
+        do_MemoryFuncs();
+    }
+}
+
+void Cmd_ReadFile(char *ar[]) {
+    void *p;
+    size_t cont=-1;  /*si no pasamos tamano se lee entero */
+    ssize_t n;
+
+    if (ar[1]==NULL || ar[2]==NULL){
+        printf ("faltan parametros\n");
+        return;
+    }
+    sscanf(ar[2], "%p", &p); /*convertimos de cadena a puntero*/  
+    if (ar[3]!=NULL)
+        cont=(size_t) atoll(ar[3]);
+    if ((n=LeerFichero(ar[1],p,cont))==-1)
+        perror ("Imposible leer fichero");
+    else
+        printf ("leidos %lld bytes de %s en %p\n",(long long) n,ar[1],p);
+}
+
+void recurse(char *trozos[]) {
+    int n;
+    n = atoi(trozos[1]);
+
+    if (trozos[1] == NULL) {
+        perror("Introduzca el numero de las llamadas recursivas");
+    } else if (n == 0) {
+        perror("Introduce un valor correcto");
+    } else {
+        Recursiva(n);
+    }
+}
+
+void Cmd_read(char *ar[], ftList *fL) {
+    void *p;
+    ftPosL item;
+    size_t cont=-1;  /*si no pasamos tamano se lee entero */
+    ssize_t n;
+    char *inicio = NULL;
+
+    if (ar[1]==NULL || ar[2]==NULL){
+        printf ("faltan parametros\n");
+        return;
+    }
+
+    item = fFindItem(atoi(ar[1]), *fL);
+    if (item == NULL) {
+        printf("Fichero no encontrado\n");
+        return;
+    }
+    sscanf(ar[2], "%p", &p); /*convertimos de cadena a puntero*/
+
+    if ((inicio = strstr(item->data.fname, "Mapeo de ")) != NULL) {
+        inicio += strlen("Mapeo de ");
+    }
+
+
+    if (ar[3]!=NULL)
+        cont=(size_t) atoll(ar[3]);
+    if ((n=LeerFichero(inicio,p,cont))==-1)
+        perror ("Imposible leer fichero");
+    else
+        printf ("leidos %lld bytes del descriptor %s en %p\n",(long long) n,ar[1],p);
 }

@@ -43,4 +43,10 @@ void delrec(char *trozos[]);
 void allocate();
 void deallocate();
 
-void memfill(char *trozos[]);
+void memfill();
+void memdump();
+
+void memory();
+void Cmd_ReadFile();
+void Cmd_read();
+void recurse();

@@ -11,6 +11,7 @@ Mario Ozón Casais (mario.ozon@udc.es)
 #include <sys/shm.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <sys/wait.h>
 #include "lista.h"
 #include "listaArchivo.h"
 
@@ -41,3 +42,10 @@ void do_DeallocateShared();
 void do_DeallocateGenerico();
 
 void LlenarMemoria(void *p, size_t cont, unsigned char byte);
+void do_MemoryFuncs();
+void do_MemoryVars();
+void Do_pmap();
+
+ssize_t LeerFichero();
+void Recursiva();
+

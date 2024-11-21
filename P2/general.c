@@ -8,6 +8,10 @@ Mario Ozón Casais (mario.ozon@udc.es)
 #include "listaArchivo.h"
 #include "listaMemoria.h"
 
+#define TAMANO 2048
+
+int extern1, extern2, extern3;
+int externIni1 = 11, externIni2 = 22, externIni3 = 33; 
 
 void imprimirPromp(){ printf("$ ");}
 
@@ -74,7 +78,17 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL, mtList *mL) {
         deallocate(trozos, mL, fL);
     } else if (strcmp(trozos[0],"memfill")==0){
         memfill(trozos);
-    }else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
+    } else if (strcmp(trozos[0],"memdump")==0) {
+        memdump(trozos);
+    } else if (strcmp(trozos[0],"memory")==0) {
+        memory(trozos, mL);
+    } else if (strcmp(trozos[0],"readfile")==0) {
+        Cmd_ReadFile(trozos);
+    } else if (strcmp(trozos[0],"recurse")==0) {
+        recurse(trozos);
+    } else if (strcmp(trozos[0],"read")==0) {
+        Cmd_read(trozos, fL);
+    } else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
         fDeleteList(fL);
         mDeleteList(mL);
@@ -387,6 +401,8 @@ void do_AllocateMalloc(char *arg[], mtList *mL) {
         memAd = malloc(atoi(arg[0]));
         if (memAd == NULL) {
             perror("No se pudo reservar memoria");
+        } else if (atoi(arg[0]) == 0) {
+            perror("No se pueden reservar bloques de 0 bytes");
         } else {
             mItem.size = atoi(arg[0]);
             mItem.memAd = memAd;
@@ -636,4 +652,81 @@ void LlenarMemoria(void *p, size_t cont, unsigned char byte) {
   for (i=0; i<cont;i++) {
     	arr[i]=byte;
   }
+}
+
+void do_MemoryFuncs() {
+    printf("Funciones programa  %p   %p   %p\n", &authors, &date, &pid);
+    printf("Funciones libreria  %p   %p   %p\n", &printf, &strcmp, &localtime);
+}
+
+void do_MemoryVars() {
+    static int varStatic1, varStatic2, varStatic3;
+    static int iniStatic1 = 10, iniStatic2 = 20, iniStatic3 = 30;
+    
+    int auto1 = 1, auto2 = 2, auto3 = 3;
+
+    printf("Variables Externas %20p%17p%17p\n", &extern1, &extern2, &extern3 );
+    printf("Variables Externas Ini %16p%17p%17p\n", &externIni1, &externIni2, &externIni3);
+    printf("Variables Estaticas %19p%17p%17p\n", &varStatic1, &varStatic2, &varStatic3);
+    printf("Variables Estaticas Ini %15p%17p%17p\n", &iniStatic1, &iniStatic2, &iniStatic3);
+    printf("Variables Automaticas %17p%17p%17p\n", &auto1, &auto2, &auto3);
+}
+
+void Do_pmap(void) { 
+    pid_t pid;       /*hace el pmap (o equivalente) del proceso actual*/
+    char elpid[32];
+    char *argv[4]={"pmap",elpid,NULL};
+   
+    sprintf (elpid,"%d", (int) getpid());
+    if ((pid=fork())==-1){
+        perror ("Imposible crear proceso");
+        return;
+        }
+    if (pid==0){
+        if (execvp(argv[0],argv)==-1)
+            perror("cannot execute pmap (linux, solaris)");
+            
+        argv[0]="procstat"; argv[1]="vm"; argv[2]=elpid; argv[3]=NULL;   
+        if (execvp(argv[0],argv)==-1)/*No hay pmap, probamos procstat FreeBSD */
+            perror("cannot execute procstat (FreeBSD)");
+            
+        argv[0]="procmap",argv[1]=elpid;argv[2]=NULL;    
+            if (execvp(argv[0],argv)==-1)  /*probamos procmap OpenBSD*/
+            perror("cannot execute procmap (OpenBSD)");
+            
+        argv[0]="vmmap"; argv[1]="-interleave"; argv[2]=elpid;argv[3]=NULL;
+        if (execvp(argv[0],argv)==-1) /*probamos vmmap Mac-OS*/
+            perror("cannot execute vmmap (Mac-OS)");      
+        exit(1);
+    }
+    waitpid (pid,NULL,0);
+}
+
+ssize_t LeerFichero(char *f, void *p, size_t cont) {
+    struct stat s;
+    ssize_t  n;  
+    int df,aux;
+
+    if (stat (f,&s)==-1 || (df=open(f,O_RDONLY))==-1)
+        return -1;     
+    if (cont==-1)   /* si pasamos -1 como bytes a leer lo leemos entero*/
+        cont=s.st_size;
+    if ((n=read(df,p,cont))==-1){
+        aux=errno;
+        close(df);
+        errno=aux;
+        return -1;
+    }
+    close (df);
+    return n;
+}
+
+void Recursiva(int n) {
+    char automatico[TAMANO];
+    static char estatico[TAMANO];
+
+    printf ("parametro:%3d(%p) array %p, arr estatico %p\n",n,&n,automatico, estatico);
+
+    if (n>0)
+        Recursiva(n-1);
 }
