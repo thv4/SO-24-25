@@ -184,7 +184,9 @@ void help(char * trozos[]) {
         printf("authors  pid  pppid  cd  date\n");
         printf("historic  open  dup  close  infosys\n");
         printf("makefile  makedir  listfile  cwd  listdir\n");
-        printf("reclist  revlist  erase  delrec\n");
+        printf("reclist  revlist  erase  delrec  allocate\n");
+        printf("deallocate  memfill  memdump  memory  readfile\n");
+        printf("writefile  read  write  recurse\n");
     } else if (strcmp(trozos[1],"authors")==0) {
         printf("authors [-n|-l]	Muestra los nombres y/o logins de los autores\n");
     }else if (strcmp(trozos[1],"pid")==0){
@@ -247,6 +249,40 @@ void help(char * trozos[]) {
         printf("erase [name1 name2 ..]	Borra ficheros o directorios vacios\n");
     } else if (strcmp(trozos[1],"delrec")==0) {
         printf("delrec [name1 name2 ..]	Borra ficheros o directorios no vacios recursivamente\n");
+    } else if (strcmp(trozos[1],"allocate")==0) {
+        printf("allocate [-malloc|-shared|-createshared|-mmap]... Asigna un bloque de memoria\n");
+        printf("\t-malloc tam: asigna un bloque malloc de tamano tam\n");
+        printf("\t-createshared cl tam: asigna (creando) el bloque de memoria compartida de clave cl y tamano tam\n");
+        printf("\t-shared cl: asigna el bloque de memoria compartida (ya existente) de clave cl\n");
+        printf("\t-mmap fich perm: mapea el fichero fich, perm son los permisos\n");
+    } else if (strcmp(trozos[1],"deallocate")==0) {
+        printf("deallocate [-malloc|-shared|-delkey|-mmap|addr]..	Desasigna un bloque de memoria\n");
+        printf("\t-malloc tam: desasigna el bloque malloc de tamano tam\n");
+        printf("\t-shared cl: desasigna (desmapea) el bloque de memoria compartida de clave cl\n");
+        printf("\t-delkey cl: elimina del sistema (sin desmapear) la clave de memoria cl\n");
+        printf("\t-mmap fich: desmapea el fichero mapeado fich\n");
+        printf("\taddr: desasigna el bloque de memoria en la direccion addr\n");
+    } else if (strcmp(trozos[1],"memfill")==0) {
+        printf("memfill addr cont byte 	Llena la memoria a partir de addr con byte\n");
+    } else if (strcmp(trozos[1],"memdump")==0) {
+        printf("memdump addr cont 	Vuelca en pantallas los contenidos (cont bytes) de la posicion de memoria addr\n");
+    } else if (strcmp(trozos[1],"memory")==0) {
+        printf("memory [-blocks|-funcs|-vars|-all|-pmap] ..	Muestra muestra detalles de la memoria del proceso\n");
+        printf("\t-blocks: los bloques de memoria asignados\n");
+        printf("\t-funcs: las direcciones de las funciones\n");
+        printf("\t-vars: las direcciones de las variables\n");
+        printf("\t:-all: todo\n");
+        printf("\t-pmap: muestra la salida del comando pmap(o similar)\n");
+    } else if (strcmp(trozos[1],"readfile")==0) {
+        printf("readfile fiche addr cont 	Lee cont bytes desde fich a la direccion addr\n");
+    } else if (strcmp(trozos[1],"writefile")==0) {
+        printf("writefile fiche addr cont   Escribe cont bytes desde la direccion addr a fich\n");
+    } else if (strcmp(trozos[1],"read")==0) {
+        printf("read df addr cont	Transfiere cont bytes del fichero descrito por df a la dirección addr\n");
+    } else if (strcmp(trozos[1],"write")==0) {
+        printf("write df addr cont	Transfiere cont bytes desde la dirección addr al fichero descrito por df\n");
+    } else if (strcmp(trozos[1],"recurse")==0) {
+        printf("recurse [n]	Invoca a la funcion recursiva n veces\n");
     }
 }
 
@@ -706,7 +742,7 @@ void Cmd_WriteFile(char *ar[]) {
     if (ar[3]!=NULL)
         cont=(size_t) atoll(ar[3]);
     if ((n=EscribirFichero(ar[1],p,cont))==-1)
-        perror ("Imposible leer fichero");
+        perror ("Imposible escribir fichero");
     else
         printf ("escritos %lld bytes en %s desde %p\n",(long long) n,ar[1],p);
 }
@@ -760,4 +796,40 @@ void Cmd_read(char *ar[], ftList *fL) {
         perror ("Imposible leer fichero");
     else
         printf ("leidos %lld bytes del descriptor %s en %p\n",(long long) n,ar[1],p);
+}
+
+void Cmd_write(char *ar[], ftList *fL) {
+    void *p;
+    ftPosL item;
+    size_t cont=-1;  /*si no pasamos tamano se lee entero */
+    ssize_t n;
+    char *inicio = NULL;
+
+    if (ar[1]==NULL || ar[2]==NULL){
+        printf ("faltan parametros\n");
+        return;
+    }
+
+    item = fFindItem(atoi(ar[1]), *fL);
+    if (item == NULL) {
+        printf("Fichero no encontrado\n");
+        return;
+    }
+    sscanf(ar[2], "%p", &p); /*convertimos de cadena a puntero*/
+
+    if ((inicio = strstr(item->data.fname, "Mapeo de ")) != NULL) {
+        inicio += strlen("Mapeo de ");
+    } else if ((inicio = strstr(item->data.fname, "file: ")) != NULL) {
+        inicio += strlen("file: ");
+    } else {
+        inicio = item->data.fname;
+    }
+
+
+    if (ar[3]!=NULL)
+        cont=(size_t) atoll(ar[3]);
+    if ((n=EscribirFichero2(inicio,p,cont))==-1)
+        perror ("Imposible escribir fichero");
+    else
+        printf ("escritos %lld bytes en %s desde %p\n",(long long) n,ar[1],p);
 }

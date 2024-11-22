@@ -48,5 +48,6 @@ void Do_pmap();
 
 ssize_t LeerFichero();
 ssize_t EscribirFichero();
+ssize_t EscribirFichero2();
 void Recursiva();
 
