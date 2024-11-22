@@ -88,6 +88,8 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL, mtList *mL) {
         recurse(trozos);
     } else if (strcmp(trozos[0],"read")==0) {
         Cmd_read(trozos, fL);
+    } else if (strcmp(trozos[0],"writefile")==0) {
+        Cmd_WriteFile(trozos);
     } else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
         fDeleteList(fL);
@@ -712,6 +714,28 @@ ssize_t LeerFichero(char *f, void *p, size_t cont) {
     if (cont==-1)   /* si pasamos -1 como bytes a leer lo leemos entero*/
         cont=s.st_size;
     if ((n=read(df,p,cont))==-1){
+        aux=errno;
+        close(df);
+        errno=aux;
+        return -1;
+    }
+    close (df);
+    return n;
+}
+
+ssize_t EscribirFichero(char *f, void *p, size_t cont) {
+    struct stat s;
+    ssize_t  n;  
+    int df,aux;
+
+    if (df=open(f,O_RDONLY) !=-1)
+        return -1;     
+    if (cont==-1)   /* si pasamos -1 como bytes a leer lo leemos entero*/
+        cont=s.st_size;
+
+    df = creat(f, 0777);
+
+    if ((n=write(df,p,cont))==-1){
         aux=errno;
         close(df);
         errno=aux;

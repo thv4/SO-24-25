@@ -48,5 +48,6 @@ void memdump();
 
 void memory();
 void Cmd_ReadFile();
+void Cmd_WriteFile();
 void Cmd_read();
 void recurse();

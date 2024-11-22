@@ -47,5 +47,6 @@ void do_MemoryVars();
 void Do_pmap();
 
 ssize_t LeerFichero();
+ssize_t EscribirFichero();
 void Recursiva();
 

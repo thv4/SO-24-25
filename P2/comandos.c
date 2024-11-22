@@ -162,7 +162,7 @@ void Cmd_dup (char * tr[], ftList *L) {
     }
 
     p = original->data.fname;
-    sprintf (aux,"dup %d : %s",df, p);
+    sprintf (aux,"dup of fd: %d file: %s",df, p);
 
     copia.descriptor = duplicado;
     strcpy(copia.fname, aux);
@@ -251,10 +251,17 @@ void help(char * trozos[]) {
 }
 
 void makefile(char * trozos[]){
-int fd;
+    int fd;
 
-fd = creat(trozos[1], 0777);
-if (fd ==-1) {
+    fd = open(trozos[1], O_RDONLY);
+    if (fd != -1) {
+        close(fd);
+        printf("Error: El fichero %s ya existe\n", trozos[1]);
+        return;
+    }
+
+    fd = creat(trozos[1], 0777);
+    if (fd ==-1) {
         perror ("Imposible crear fichero\n");
     }
 }
@@ -616,8 +623,15 @@ void deallocate(char *trozos[], mtList * mL, ftList * fL) {
 
 void memfill(char *trozos[]) {
     void * memAd;
-    unsigned char byte = strtoul(trozos[3],NULL,10);
-    unsigned char cont = strtoul(trozos[2],NULL,10);
+    unsigned char byte;
+    unsigned char cont;
+
+    if (trozos[1] == NULL || trozos[2] == NULL || trozos[3] == NULL) {
+        return;
+    }
+
+    byte = strtoul(trozos[3],NULL,10);
+    cont = strtoul(trozos[2],NULL,10);
 
     sscanf(trozos[1], "%p", &memAd); 
     printf("Llenando %s bytes de memoria con el byte  %c(%X) a partir de la direccion %s\n", trozos[2],(char)byte,byte,trozos[1]);
@@ -679,6 +693,24 @@ void Cmd_ReadFile(char *ar[]) {
         printf ("leidos %lld bytes de %s en %p\n",(long long) n,ar[1],p);
 }
 
+void Cmd_WriteFile(char *ar[]) {
+    void *p;
+    size_t cont=-1;  /*si no pasamos tamano se lee entero */
+    ssize_t n;
+
+    if (ar[1]==NULL || ar[2]==NULL){
+        printf ("faltan parametros\n");
+        return;
+    }
+    sscanf(ar[2], "%p", &p); /*convertimos de cadena a puntero*/  
+    if (ar[3]!=NULL)
+        cont=(size_t) atoll(ar[3]);
+    if ((n=EscribirFichero(ar[1],p,cont))==-1)
+        perror ("Imposible leer fichero");
+    else
+        printf ("escritos %lld bytes en %s desde %p\n",(long long) n,ar[1],p);
+}
+
 void recurse(char *trozos[]) {
     int n;
     n = atoi(trozos[1]);
@@ -691,6 +723,7 @@ void recurse(char *trozos[]) {
         Recursiva(n);
     }
 }
+
 
 void Cmd_read(char *ar[], ftList *fL) {
     void *p;
@@ -713,6 +746,11 @@ void Cmd_read(char *ar[], ftList *fL) {
 
     if ((inicio = strstr(item->data.fname, "Mapeo de ")) != NULL) {
         inicio += strlen("Mapeo de ");
+    } else if ((inicio = strstr(item->data.fname, "file: ")) != NULL) {
+        inicio += strlen("file: ");
+        printf("%s\n", inicio);
+    } else {
+        inicio = item->data.fname;
     }
 
 
