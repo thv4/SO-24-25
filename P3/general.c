@@ -94,6 +94,8 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL, mtList *mL) {
         Cmd_write(trozos,fL);
     } else if (strcmp(trozos[0],"getuid")==0) {
         Cmd_getuid(trozos);
+    } else if (strcmp(trozos[0],"setuid")==0) {
+        Cmd_setuid(trozos);
     } else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
         fDeleteList(fL);

@@ -283,6 +283,12 @@ void help(char * trozos[]) {
         printf("write df addr cont	Transfiere cont bytes desde la dirección addr al fichero descrito por df\n");
     } else if (strcmp(trozos[1],"recurse")==0) {
         printf("recurse [n]	Invoca a la funcion recursiva n veces\n");
+    } else if (strcmp(trozos[1],"getuid")==0) {
+        printf("getuid 	Muestra las credenciales del proceso que ejecuta el shell\n");
+    } else if (strcmp(trozos[1],"setuid")==0) {
+        printf("setuid [-l] id	Cambia las credenciales del proceso que ejecuta el shell\n");
+        printf("\tid: establece la credencial al valor numerico id\n");
+        printf("\t-l id: establece la credencial a login id\n");
     }
 }
 
@@ -848,4 +854,39 @@ void Cmd_getuid(char *trozos[]) {
 
     printf("Credencial real: %d, (%s)\n",usuarioReal, sReal->pw_name);
     printf("Credencial efectica:  %d, (%s)\n", usuarioEfectivo, sEfectivo->pw_name);
+}
+
+void Cmd_setuid(char *trozos[]){
+    uid_t nuevoUID;
+    struct passwd *usuario; //a partir del login
+    int aux;
+    
+    if(trozos[1] == NULL){
+        Cmd_getuid(trozos);
+        //perror("Introduce un id nuevo");
+        return;
+    }
+
+    if(strcmp(trozos[1],"-l") == 0){
+        if(trozos[2] == NULL){
+            Cmd_getuid(trozos);
+            //perror("Introduce un nombre de usuario");
+            return;
+        }
+
+        usuario = getpwnam(trozos[2]);
+        if (usuario == NULL){
+            printf("Usuario no existente %s\n", trozos[2]);
+            return;
+        }
+        nuevoUID = usuario->pw_uid;
+    } else {
+        nuevoUID = atoi(trozos[1]);
+    }
+
+    if (setuid(nuevoUID) == -1){//seteuid??
+        perror("Error al cambiar el UID efectivo");
+    } else {
+        printf("Credencial cambiada a %d\n", nuevoUID);
+    }
 }

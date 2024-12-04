@@ -54,3 +54,4 @@ void Cmd_write();
 void recurse();
 
 void Cmd_getuid();
+void Cmd_setuid();
