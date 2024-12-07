@@ -912,6 +912,9 @@ void showVar(char * trozos[]) {
             printf("Con arg3 main %s (%p) @%p\n",ar3[n], ar3[n], &ar3[n]);
             printf("Con environ %s (%p) @%p\n",environ[n], environ[n], &environ[n]);
             printf("Con getenv %s (%p)\n", getenv(trozos[1]), getenv(trozos[1])); 
+        } else if ((n = BuscarVariable(trozos[1], environ)) != -1) {
+            printf("Con environ %s (%p) @%p\n",environ[n], environ[n], &environ[n]);
+            printf("Con getenv %s (%p)\n", getenv(trozos[1]), getenv(trozos[1])); 
         } else {
             printf("Variable de entorno no encontrada\n");
         }
@@ -919,17 +922,29 @@ void showVar(char * trozos[]) {
 }
 
 void changeVar(char * trozos[]) {
+    extern char ** environ;
+    char * envVar;
 
     if(trozos[1] == NULL || trozos[2] == NULL || trozos[3] == NULL) {
         printf("Uso: changevar [-a|-e|-p] var valor\n");
     } else {
         if (strcmp(trozos[1],"-a") == 0) {
-            // acceso por tercer argumento del main
+            if(CambiarVariable(trozos[2], trozos[3], ar3) == -1) {
+                printf("Error al cambiar la variable de entorno\n");
+            }
         } else if (strcmp(trozos[1],"-e") == 0) {
-            // acceso mediante environ
+            if(CambiarVariable(trozos[2], trozos[3], environ) == -1) {
+                printf("Error al cambiar la variable de entorno\n");
+            }
         } else if (strcmp(trozos[1],"-p") == 0) {
-            // acceso mediante putenv
+            envVar=malloc(1024);
+            strcpy(envVar, "");
+            strcat(envVar, trozos[2]);
+            strcat(envVar, "=");
+            strcat(envVar, trozos[3]);
+            if(putenv(envVar) != 0) {
+                printf("Error al cambiar la variable de entorno\n");
+            }
         }
     }
-
 }

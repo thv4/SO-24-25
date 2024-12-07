@@ -21,7 +21,7 @@ typedef struct tItemL {
 } tItemL;
 
 typedef struct tNode {
-    tItemL data; // insertar el char **env para tercer parametro del main
+    tItemL data;
     tPosL next;
 }tNode;
 
