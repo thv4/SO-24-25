@@ -186,7 +186,8 @@ void help(char * trozos[]) {
         printf("makefile  makedir  listfile  cwd  listdir\n");
         printf("reclist  revlist  erase  delrec  allocate\n");
         printf("deallocate  memfill  memdump  memory  readfile\n");
-        printf("writefile  read  write  recurse\n");
+        printf("writefile  read  write  recurse getuid\n");
+        printf("setuid showvar\n");
     } else if (strcmp(trozos[1],"authors")==0) {
         printf("authors [-n|-l]	Muestra los nombres y/o logins de los autores\n");
     }else if (strcmp(trozos[1],"pid")==0){
@@ -289,6 +290,13 @@ void help(char * trozos[]) {
         printf("setuid [-l] id	Cambia las credenciales del proceso que ejecuta el shell\n");
         printf("\tid: establece la credencial al valor numerico id\n");
         printf("\t-l id: establece la credencial a login id\n");
+    } else if (strcmp(trozos[1],"showvar")==0) {
+        printf("showvar var	Muestra el valor y las direcciones de la variable de entorno var\n");
+    } else if (strcmp(trozos[1],"changevar")==0) {
+        printf("changevar [-a|-e|-p] var valor	Cambia el valor de una variable de entorno\n");
+        printf("\t-a: accede por el tercer arg de main\n");
+        printf("\t-e: accede mediante environ\n");
+        printf("\t-p: accede mediante putenv\n");
     }
 }
 
@@ -849,8 +857,10 @@ void Cmd_getuid(char *trozos[]) {
     usuarioReal = getuid();
     usuarioEfectivo = geteuid();
 
-    sReal = getpwuid(usuarioReal);
-    sEfectivo = getpwuid(usuarioEfectivo);
+    if ((sReal = getpwuid(usuarioReal)) == NULL || (sEfectivo = getpwuid(usuarioEfectivo)) == NULL) {
+        printf("usuario no encontrado\n");
+        return;
+    }
 
     printf("Credencial real: %d, (%s)\n",usuarioReal, sReal->pw_name);
     printf("Credencial efectica:  %d, (%s)\n", usuarioEfectivo, sEfectivo->pw_name);
@@ -884,9 +894,42 @@ void Cmd_setuid(char *trozos[]){
         nuevoUID = atoi(trozos[1]);
     }
 
-    if (setuid(nuevoUID) == -1){//seteuid??
+    if (setuid(nuevoUID) == -1){
         perror("Error al cambiar el UID efectivo");
     } else {
         printf("Credencial cambiada a %d\n", nuevoUID);
     }
+}
+
+void showVar(char * trozos[]) {
+    int n;
+    extern char ** environ;
+
+    if(trozos[1] == NULL) {
+        printEnvVars();
+    } else {
+        if ((n = BuscarVariable(trozos[1], ar3)) != -1) { // Hecho como en la shell de referencia verificar si hacerlo como en el enunciado
+            printf("Con arg3 main %s (%p) @%p\n",ar3[n], ar3[n], &ar3[n]);
+            printf("Con environ %s (%p) @%p\n",environ[n], environ[n], &environ[n]);
+            printf("Con getenv %s (%p)\n", getenv(trozos[1]), getenv(trozos[1])); 
+        } else {
+            printf("Variable de entorno no encontrada\n");
+        }
+    }
+}
+
+void changeVar(char * trozos[]) {
+
+    if(trozos[1] == NULL || trozos[2] == NULL || trozos[3] == NULL) {
+        printf("Uso: changevar [-a|-e|-p] var valor\n");
+    } else {
+        if (strcmp(trozos[1],"-a") == 0) {
+            // acceso por tercer argumento del main
+        } else if (strcmp(trozos[1],"-e") == 0) {
+            // acceso mediante environ
+        } else if (strcmp(trozos[1],"-p") == 0) {
+            // acceso mediante putenv
+        }
+    }
+
 }

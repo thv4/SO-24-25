@@ -11,7 +11,7 @@ Mario Ozón Casais (mario.ozon@udc.es)
 #define TAMANO 2048
 
 int extern1, extern2, extern3;
-int externIni1 = 11, externIni2 = 22, externIni3 = 33; 
+int externIni1 = 11, externIni2 = 22, externIni3 = 33;
 
 void imprimirPromp(){ printf("$ ");}
 
@@ -96,6 +96,10 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL, mtList *mL) {
         Cmd_getuid(trozos);
     } else if (strcmp(trozos[0],"setuid")==0) {
         Cmd_setuid(trozos);
+    } else if (strcmp(trozos[0],"showvar")==0) {
+        showVar(trozos);
+    } else if (strcmp(trozos[0],"changevar")==0) {
+        changeVar(trozos);
     } else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
         fDeleteList(fL);
@@ -778,4 +782,44 @@ void Recursiva(int n) {
 
     if (n>0)
         Recursiva(n-1);
+}
+
+int BuscarVariable(char * var, char *e[]) {  /*busca una variable en el entorno que se le pasa como parÃ¡metro*/                                        
+  int pos=0;                                 /*devuelve la posicion de la variable en el entorno, -1 si no existe*/
+  char aux[2048];
+  
+  strcpy (aux,var);
+  strcat (aux,"=");
+  
+  while (e[pos]!=NULL)
+    if (!strncmp(e[pos],aux,strlen(aux)))
+      return (pos);
+    else 
+      pos++;
+  errno=ENOENT;   /*no hay tal variable*/
+  return(-1);
+}
+
+void printEnvVars() {
+    int i;
+
+    for (i = 0; ar3[i] != NULL; i++) {
+        printf("%p-->main arg3 [%d]=(%p) %s\n", &ar3[i], i, ar3[i], ar3[i]);
+    }
+}
+
+int CambiarVariable(char * var, char * valor, char *e[]) { /*cambia una variable en el entorno que se le pasa como parÃ¡metro*/
+  int pos;                                                 /*lo hace directamente, no usa putenv*/
+  char *aux;
+   
+  if ((pos=BuscarVariable(var,e))==-1)
+    return(-1);
+ 
+  if ((aux=(char *)malloc(strlen(var)+strlen(valor)+2))==NULL)
+	return -1;
+  strcpy(aux,var);
+  strcat(aux,"=");
+  strcat(aux,valor);
+  e[pos]=aux;
+  return (pos);
 }

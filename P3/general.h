@@ -15,6 +15,8 @@ Mario Ozón Casais (mario.ozon@udc.es)
 #include "lista.h"
 #include "listaArchivo.h"
 
+extern char * ar3[2048]; // Tercer argumento del main 
+
 void imprimirPromp();
 void leerEntrada(char * cadena, int tamaño);
 int TrocearCadena(char * cadena, char * trozos[]);
@@ -51,3 +53,6 @@ ssize_t EscribirFichero();
 ssize_t EscribirFichero2();
 void Recursiva();
 
+int BuscarVariable();
+void printEnvVars();
+int CambiarVariable();

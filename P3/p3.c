@@ -8,7 +8,9 @@ Mario Ozón Casais (mario.ozon@udc.es)
 #include "lista.h"
 #include "listaMemoria.h"
 
-int main(){
+char * ar3[2048];
+
+int main(int argc, char * argv[], char * env[]){
     char cadena[256];
     char * trozos[256];
     char copiaCadena[256];
@@ -22,6 +24,10 @@ int main(){
     fCreateList(&listaArch);
     mCreateList(&listaMem);
 
+    for (int i = 0; env[i] != NULL; i++) {
+        ar3[i] = env[i];
+    }
+    
     while (true) {
         imprimirPromp();
         leerEntrada(cadena, sizeof cadena);

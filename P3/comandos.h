@@ -55,3 +55,5 @@ void recurse();
 
 void Cmd_getuid();
 void Cmd_setuid();
+void showVar();
+void changeVar();
