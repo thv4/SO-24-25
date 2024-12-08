@@ -57,3 +57,4 @@ void Cmd_getuid();
 void Cmd_setuid();
 void showVar();
 void changeVar();
+void Cmd_environ();

@@ -55,4 +55,5 @@ void Recursiva();
 
 int BuscarVariable();
 void printEnvVars();
+void printEnvVars2();
 int CambiarVariable();

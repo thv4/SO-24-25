@@ -297,6 +297,10 @@ void help(char * trozos[]) {
         printf("\t-a: accede por el tercer arg de main\n");
         printf("\t-e: accede mediante environ\n");
         printf("\t-p: accede mediante putenv\n");
+    } else if (strcmp(trozos[1],"environ")==0) {
+        printf("environ [-environ|-addr] 	Muestra el entorno del proceso\n");
+        printf("\t-environ: accede usando environ (en lugar del tercer arg de main)\n");
+        printf("\t-addr: muestra el valor y donde se almacenan environ y el 3er arg main \n");
     }
 }
 
@@ -946,5 +950,18 @@ void changeVar(char * trozos[]) {
                 printf("Error al cambiar la variable de entorno\n");
             }
         }
+    }
+}
+
+void Cmd_environ(char * trozos[]) {
+    extern char ** environ;
+
+    if (trozos[1] == NULL) {
+        printEnvVars();
+    } else if (strcmp(trozos[1], "-environ") == 0) {
+        printEnvVars2();
+    } else if (strcmp(trozos[1], "-addr") == 0) {
+        printf("environ: %p (almacenado en %p)\n", environ, &environ);
+        printf("main arg3: %p (almacenado en %p)\n", &ar3, ar3);
     }
 }

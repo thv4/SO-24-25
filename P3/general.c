@@ -100,6 +100,8 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL, mtList *mL) {
         showVar(trozos);
     } else if (strcmp(trozos[0],"changevar")==0) {
         changeVar(trozos);
+    } else if (strcmp(trozos[0],"environ")==0) {
+        Cmd_environ(trozos);
     } else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
         fDeleteList(fL);
@@ -800,11 +802,20 @@ int BuscarVariable(char * var, char *e[]) {  /*busca una variable en el entorno 
   return(-1);
 }
 
-void printEnvVars() {
+void printEnvVars() { // Imprime tercer argumento del main
     int i;
 
     for (i = 0; ar3[i] != NULL; i++) {
         printf("%p-->main arg3 [%d]=(%p) %s\n", &ar3[i], i, ar3[i], ar3[i]);
+    }
+}
+
+void printEnvVars2() { // Imprime environ 
+    int i;
+    extern char ** environ;
+
+    for (i = 0; ar3[i] != NULL; i++) {
+        printf("%p-->environ [%d]=(%p) %s\n", &environ[i], i, environ[i], environ[i]);
     }
 }
 
