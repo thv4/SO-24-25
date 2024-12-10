@@ -965,3 +965,37 @@ void Cmd_environ(char * trozos[]) {
         printf("main arg3: %p (almacenado en %p)\n", &ar3, ar3);
     }
 }
+
+void Cmd_fork (char *tr[]) {
+	pid_t pid;
+	
+	if ((pid=fork())==0){
+/*		VaciarListaProcesos(&LP); Depende de la implementaciÃ³n de cada uno*/
+		printf ("ejecutando proceso %d\n", getpid());
+	}
+	else if (pid!=-1)
+		waitpid (pid,NULL,0);
+}
+
+void Cmd_exec(char * tr[]) {
+    char **args = &tr[1];
+
+    if (tr[1] == NULL) {
+        printf("Uso invalido del comando\n");
+    } else if(execvp(args[0],args) == -1) {
+        printf("Error al hacer exec\n");
+        return;
+    }
+}
+
+void cmd_fg(char *tr[]){
+	int pid;
+    char **args = &tr[1];
+
+	if ((pid=fork())==0){
+		if (execvp(args[0], args)==-1)	
+			perror ("Cannot execute");
+		exit(255);
+	}
+	waitpid (pid,NULL,0);
+}

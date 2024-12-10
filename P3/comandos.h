@@ -58,3 +58,6 @@ void Cmd_setuid();
 void showVar();
 void changeVar();
 void Cmd_environ();
+void Cmd_fork ();
+void Cmd_exec();
+void cmd_fg();

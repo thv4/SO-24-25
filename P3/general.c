@@ -102,6 +102,12 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL, mtList *mL) {
         changeVar(trozos);
     } else if (strcmp(trozos[0],"environ")==0) {
         Cmd_environ(trozos);
+    } else if (strcmp(trozos[0],"fork")==0) {
+        Cmd_fork(trozos);
+    } else if (strcmp(trozos[0],"exec")==0) {
+        Cmd_exec(trozos);
+    } else if (strcmp(trozos[0],"fg")==0) {
+        cmd_fg(trozos);
     } else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
         fDeleteList(fL);
