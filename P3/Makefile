@@ -11,7 +11,7 @@ general.o : general.c general.h
 	gcc -c general.c
 
 limpiar :
-	rm p3 comandos.o lista.o general.o listaArchivo.o listaMemoria.o listaBack.o
+	rm p3 *.o
 
 listaArchivo.o : listaArchivo.c listaArchivo.h
 	gcc -c listaArchivo.c
