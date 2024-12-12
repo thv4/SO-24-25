@@ -15,6 +15,7 @@ Mario Ozón Casais (mario.ozon@udc.es)
 #include <dirent.h>
 #include <pwd.h>
 #include <grp.h>
+#include <sys/resource.h>
 #include "lista.h"
 #include "listaArchivo.h"
 
@@ -61,3 +62,5 @@ void Cmd_environ();
 void Cmd_fork ();
 void Cmd_exec();
 void cmd_fg();
+void Cmd_back();
+void Cmd_listjobs();

@@ -7,6 +7,7 @@ Mario Ozón Casais (mario.ozon@udc.es)
 #include "general.h"
 #include "lista.h"
 #include "listaMemoria.h"
+#include "listaBack.h"
 
 char * ar3[2048];
 
@@ -19,10 +20,12 @@ int main(int argc, char * argv[], char * env[]){
     ftList listaArch;
     tItemL item;
     mtList listaMem;
+    btList listaBack;
 
     createList(&lista);
     fCreateList(&listaArch);
     mCreateList(&listaMem);
+    bCreateList(&listaBack);
 
     for (int i = 0; env[i] != NULL; i++) {
         ar3[i] = env[i];
@@ -47,7 +50,7 @@ int main(int argc, char * argv[], char * env[]){
             }
         }
         i++;
-        if (numeroTrozos > 0 && procesarEntrada(trozos, lista, &listaArch, &listaMem)) {
+        if (numeroTrozos > 0 && procesarEntrada(trozos, lista, &listaArch, &listaMem, &listaBack)) {
             break;
         }
     }

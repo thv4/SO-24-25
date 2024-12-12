@@ -57,3 +57,17 @@ void bDeleteList(btList *L) {
        free(temp);
    }
 }
+
+void bPrintList(btList *L){
+    struct passwd *sReal;
+    struct tm *fechaReserva;
+    char sfecha[64];
+
+    sReal = getpwuid(getuid());
+   
+     for (btPosL i = *L; i != NULL; i = i->next) {
+        fechaReserva = localtime(&i->data.fecha);
+        strftime(sfecha, sizeof(sfecha),"%b %d %H:%M",fechaReserva);
+        printf("%d  %s p = %d %s %s ()", i->data.pid, sReal->pw_name, i->data.prioridad, sfecha, i->data.senal);
+    }
+}

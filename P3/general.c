@@ -7,13 +7,16 @@ Mario Ozón Casais (mario.ozon@udc.es)
 #include "comandos.h"
 #include "listaArchivo.h"
 #include "listaMemoria.h"
+#include "listaBack.h"
 
 #define TAMANO 2048
+#define BLUE "\033[1;34m"
+#define RESET "\033[0m"
 
 int extern1, extern2, extern3;
 int externIni1 = 11, externIni2 = 22, externIni3 = 33;
 
-void imprimirPromp(){ printf("$ ");}
+void imprimirPromp(){ printf(BLUE "$ " RESET);}
 
 void leerEntrada(char * cadena, int tamaño){
     fgets(cadena, tamaño, stdin);
@@ -31,7 +34,7 @@ int TrocearCadena(char * cadena, char * trozos[]) {
     return i;
 }
 
-bool procesarEntrada(char * trozos[], tList L, ftList *fL, mtList *mL) {
+bool procesarEntrada(char * trozos[], tList L, ftList *fL, mtList *mL, btList *bL) {
     if (strcmp(trozos[0],"authors")==0) {
         authors(trozos);
     }else if (strcmp(trozos[0],"pid")==0){
@@ -108,10 +111,13 @@ bool procesarEntrada(char * trozos[], tList L, ftList *fL, mtList *mL) {
         Cmd_exec(trozos);
     } else if (strcmp(trozos[0],"fg")==0) {
         cmd_fg(trozos);
+    } else if(strcmp(trozos[0],"back")==0){
+        Cmd_back(trozos,bL);
     } else if (strcmp(trozos[0], "exit") == 0|| strcmp(trozos[0], "bye") == 0|| strcmp(trozos[0], "quit") == 0) {
         deleteList(&L);
         fDeleteList(fL);
         mDeleteList(mL);
+        bDeleteList(bL);
         return true;
     }
     return false;

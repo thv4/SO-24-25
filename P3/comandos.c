@@ -7,6 +7,8 @@ Mario Ozón Casais (mario.ozon@udc.es)
 #include "general.h"
 #include "listaArchivo.h"
 #include "listaMemoria.h"
+#include "listaDir.h"
+#include "listaBack.h"
 
 void authors(char * trozos[]) {
     if (trozos[1] != NULL && strcmp(trozos[1],"-l")==0){
@@ -57,7 +59,7 @@ void date(char * trozos[]) {
     }
 }
 
-void historic(char * trozos[], tList L, ftList fL, mtList mL) {
+void historic(char * trozos[], tList L, ftList fL, mtList mL, btList bL) {
     int N, ultId = 0;
     tPosL comando;
     tItemL itemNuevo;
@@ -81,7 +83,7 @@ void historic(char * trozos[], tList L, ftList fL, mtList mL) {
             insertElement(itemNuevo, &L);
 
             TrocearCadena(copiaTrozo, trozo);
-            procesarEntrada(trozo, L, &fL, &mL);
+            procesarEntrada(trozo, L, &fL, &mL, &bL);
         }
     }
 }
@@ -998,4 +1000,28 @@ void cmd_fg(char *tr[]){
 		exit(255);
 	}
 	waitpid (pid,NULL,0);
+}
+
+void Cmd_back(char *tr[],btList *bL){
+    int pid;
+    char **args = &tr[1];
+    btItemL bItem;
+
+    if(tr[1]==NULL){
+        printf("Error. Introduce el proceso.\n");
+    }else if((pid=fork())==0){
+        if (execvp(args[0], args)==-1)	
+			perror ("Cannot execute");
+		exit(255);
+        bItem.pid = pid;
+        bItem.fecha = time(NULL);
+        bItem.comando = &tr[1];
+        bItem.prioridad = getpriority(PRIO_PROCESS, pid);
+        strcpy(bItem.senal,"ACTIVE");
+        bInsertElement(bItem,bL);
+    }
+}
+
+void Cmd_listjobs(btList *bL){
+    //bPrintList(*bL); falloooo
 }
